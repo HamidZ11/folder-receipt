@@ -90,7 +90,7 @@ test('scan keeps the main thread free (no screenshots during this run)', async (
   // WebKit's folder picker omits hidden files entirely (.git, .env, .DS_Store),
   // so there is nothing to count on that path. Chromium lists them.
   if (browserName === 'chromium') await expect(status).toContainText('1 .DS_Store, 1 hidden, 1 node_modules, 1 .git');
-  else await expect(status).not.toContainText('.git');
+  else await expect(status).toContainText('1 node_modules, hidden files and .git not visible in Safari.');
   const wall = Date.now() - started;
 
   const r = await page.evaluate(() => {

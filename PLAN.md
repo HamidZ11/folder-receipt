@@ -148,10 +148,10 @@ type ReceiptStats = {
 - Stats run in phases (`computeStatsSliced`) with a yield between each.
 
 ### 4. Static receipt render from stats
-- [ ] `Receipt` components: Header, Summary, Items, Discounts, TotalSavings, Breakdown (bar + legend), Footer. Sections are collapsed and not yet interactive.
-- [ ] Label left and value right, hairline dividers, `tabular-nums` on every number. Long names are truncated in the middle (`very-long-na…final.mov`) and the full name is kept in `title`. All values come from tokens.
-- [ ] Every row carries `data-row` with its index, ready for slice 5. The receipt is `aria-live`-friendly: the content is in the DOM at once, not typed in.
-- [ ] **break-ui** on the receipt, with a dev-only "Demo data / Worst case" toggle. Cases include:
+- [x] `Receipt` components: Header, Summary, Items, Discounts, TotalSavings, Breakdown (bar + legend), Footer. Sections are collapsed and not yet interactive.
+- [x] Label left and value right, hairline dividers, `tabular-nums` on every number. Long names are truncated in the middle (`very-long-na…final.mov`) and the full name is kept in `title`. All values come from tokens.
+- [x] Every row carries `data-row` with its index, ready for slice 5. The receipt is `aria-live`-friendly: the content is in the DOM at once, not typed in.
+- [x] **break-ui** on the receipt, with a dev-only "Demo data / Worst case" toggle. Cases include:
   - 0 files;
   - 100k files;
   - 200-character names;
@@ -163,6 +163,11 @@ type ReceiptStats = {
   Everything that breaks gets fixed.
 
 **Verify:** typecheck, lint, test and build, plus screenshots at 1280px and 390px in Chromium and WebKit for the sample data and each worst case. The console must be clean.
+
+**Findings (slice 4):**
+- The break-ui toggle (`?data=demo|worst|empty|one|100k|one-category`) runs in `pnpm dev` and the e2e build (`dist-e2e/`). `pnpm check:prod` fails if it ever reaches `dist/`.
+- The discount lines add up to the total: `installerBytes + duplicateBytes = totalSavings`. A duplicated installer is counted once, as an installer.
+- Safari: the status line says "hidden files and .git not visible in Safari" instead of showing zeros.
 
 ### 5. Print animation (signature)
 - [ ] Design pass using **emil-design-eng → animate → choreograph** (I'll read the project's `.claude/skills/*` before writing any motion code). I'll show you the choreography as a timeline table before implementing it.

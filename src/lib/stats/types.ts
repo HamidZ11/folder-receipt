@@ -69,6 +69,10 @@ export type ReceiptStats = {
   items: FileRecord[];
   installers: FileRecord[];
   duplicateGroups: DuplicateGroup[];
+  /** Bytes in leftover installers (all copies). */
+  installerBytes: number;
+  /** Duplicate copies' bytes not already counted as installers. installerBytes + duplicateBytes = totalSavings. */
+  duplicateBytes: number;
   totalSavings: number;
   breakdown: BreakdownSegment[];
   skipped: SkipCounts;

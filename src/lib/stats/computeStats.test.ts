@@ -99,6 +99,17 @@ describe('computeStats: discounts and savings', () => {
     expect(s.installers).toHaveLength(2);
     expect(s.duplicateGroups[0]!.reclaimable).toBe(1000);
     expect(s.totalSavings).toBe(2000);
+    expect(s.installerBytes).toBe(2000);
+    expect(s.duplicateBytes).toBe(0);
+  });
+
+  it('receipt lines add up: installerBytes + duplicateBytes = totalSavings', () => {
+    const s = computeStats(
+      scan([rec('Setup.dmg', 1000), rec('Setup (1).dmg', 1000), rec('v.mov', 300), rec('v copy.mov', 300)]),
+    );
+    expect(s.installerBytes).toBe(2000);
+    expect(s.duplicateBytes).toBe(300);
+    expect(s.installerBytes + s.duplicateBytes).toBe(s.totalSavings);
   });
 
   it('savings never exceed total size', () => {
@@ -115,6 +126,7 @@ describe('computeStats: discounts and savings', () => {
       const s = computeStats(scan(files));
       expect(s.totalSavings).toBeLessThanOrEqual(s.totalBytes);
       expect(s.totalSavings).toBeGreaterThanOrEqual(0);
+      expect(s.installerBytes + s.duplicateBytes).toBe(s.totalSavings);
     }
   });
 });

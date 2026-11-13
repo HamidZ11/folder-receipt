@@ -15,8 +15,8 @@ export const copy = {
   status: {
     sample: 'Showing a sample folder.',
     scanning: (root: string) => `Scanning ${root || 'folder'}…`,
-    filesFound: (n: string) => `${n} files`,
-    scanned: (root: string, n: string) => `${root || 'Folder'}: ${n} files.`,
+    filesFound: (count: number, n: string) => `${n} ${count === 1 ? 'file' : 'files'}`,
+    scanned: (root: string, count: number, n: string) => `${root || 'Folder'}: ${n} ${count === 1 ? 'file' : 'files'}.`,
     empty: (root: string) => `${root || 'That folder'} has no files.`,
     skippedLead: 'Skipped',
     skipped: {
@@ -26,6 +26,8 @@ export const copy = {
       git: (n: string) => `${n} .git`,
       unreadable: (n: string) => `${n} unreadable`,
     },
+    // Safari never shows hidden files to the page, so these counts are unknown, not zero.
+    notVisibleInSafari: 'hidden files and .git not visible in Safari',
     errors: {
       notAFolder: 'That’s a file. Drop a folder.',
       multiple: 'Drop one folder at a time.',
@@ -35,7 +37,6 @@ export const copy = {
   },
   receiptSlot: {
     label: 'Receipt',
-    empty: 'Your receipt prints here.',
   },
   privacy: {
     // Must stay true: enforced by the CSP in csp.ts / vercel.json.
@@ -43,13 +44,38 @@ export const copy = {
       'Your files are read in your browser and never uploaded. This page’s security policy blocks connections to any other site.',
   },
   receipt: {
-    footer: {
-      thanks: 'THANK YOU FOR SCANNING', // TODO(Hamid)
-      keep: 'Please keep this receipt. Your files did.', // TODO(Hamid)
+    title: 'Folder receipt',
+    number: (n: string) => `No. ${n}`,
+    ariaLabel: (folder: string) => `Receipt for ${folder || 'folder'}`,
+    folder: 'Folder',
+    untitledFolder: 'Untitled folder',
+    labels: {
+      totalFiles: 'Total files',
+      totalSize: 'Total size',
+      largest: 'Largest file',
+      notModified: 'Files not modified in a year',
+      installers: 'Leftover installers',
+      duplicates: 'Duplicates',
+      totalSavings: 'Total savings',
+    },
+    sections: {
+      items: 'Items',
+      discounts: 'Discounts',
+      breakdown: 'Where your space went',
+    },
+    none: '—',
+    empty: {
+      items: 'No items.',
+      breakdown: 'No space used.',
     },
     discountCaptions: {
       installers: 'Already installed. Still here.', // TODO(Hamid)
       duplicates: 'Same file. Bought twice.', // TODO(Hamid)
+    },
+    footer: {
+      thanks: 'Thank you for scanning', // TODO(Hamid)
+      keep: 'Please keep this receipt. Your files did.', // TODO(Hamid)
+      sample: 'Example receipt with fictional data',
     },
   },
 } as const;

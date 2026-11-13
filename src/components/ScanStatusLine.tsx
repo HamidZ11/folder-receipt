@@ -1,9 +1,12 @@
 import { copy } from '../content/copy.ts';
 import type { Receipt, ScanStatus } from '../hooks/useFolderScan.ts';
+import { hidesDotfiles } from '../lib/browser.ts';
 import { formatCount } from '../lib/stats/format.ts';
 import type { SkipCounts } from '../lib/stats/types.ts';
 
 const SKIP_ORDER: (keyof SkipCounts)[] = ['dsStore', 'dotfiles', 'nodeModules', 'git', 'unreadable'];
+const INVISIBLE_IN_SAFARI = new Set<keyof SkipCounts>(['dsStore', 'dotfiles', 'git']);
+const SAFARI = hidesDotfiles();
 
 /** Scan state, outside the receipt. Polite live region so screen readers hear the result. */
 export function ScanStatusLine({ status, receipt }: { status: ScanStatus; receipt: Receipt }) {
@@ -19,7 +22,7 @@ function Message({ status, receipt }: { status: ScanStatus; receipt: Receipt }) 
     return (
       <>
         {copy.status.scanning(status.rootName)}{' '}
-        <span className="num text-text">{copy.status.filesFound(formatCount(status.seen))}</span>
+        <span className="num text-text">{copy.status.filesFound(status.seen, formatCount(status.seen))}</span>
       </>
     );
   }
@@ -29,15 +32,17 @@ function Message({ status, receipt }: { status: ScanStatus; receipt: Receipt }) 
   if (receipt.source === 'sample') return <>{copy.status.sample}</>;
 
   const { scan, stats } = receipt;
-  const skipped = SKIP_ORDER.filter((k) => scan.skipped[k] > 0)
-    .map((k) => copy.status.skipped[k](formatCount(scan.skipped[k])))
-    .join(', ');
+  const parts = SKIP_ORDER.filter((k) => scan.skipped[k] > 0 && !(SAFARI && INVISIBLE_IN_SAFARI.has(k))).map((k) =>
+    copy.status.skipped[k](formatCount(scan.skipped[k])),
+  );
+  if (SAFARI) parts.push(copy.status.notVisibleInSafari);
+  const skipped = parts.join(', ');
   return (
     <>
       <span className="num">
         {stats.totalFiles === 0
           ? copy.status.empty(scan.rootName)
-          : copy.status.scanned(scan.rootName, formatCount(stats.totalFiles))}
+          : copy.status.scanned(scan.rootName, stats.totalFiles, formatCount(stats.totalFiles))}
       </span>
       {skipped && (
         <>

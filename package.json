@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "screens": "playwright test",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm screens"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm check:prod && pnpm screens",
+    "check:prod": "! grep -rqE 'dev-data-toggle|Worst case' dist/assets"
   },
   "dependencies": {
     "react": "^19.3.1",

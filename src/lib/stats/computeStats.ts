@@ -43,10 +43,12 @@ function* statsPhases(scan: ScanResult): Generator<void, ReceiptStats, void> {
   yield;
 
   // Savings: union of installer files and every duplicate copy except the keeper.
-  const reclaim = new Set<FileRecord>(installers);
-  for (const g of duplicateGroups) for (const f of g.files.slice(1)) reclaim.add(f);
-  let totalSavings = 0;
-  for (const f of reclaim) totalSavings += f.size;
+  // Duplicate copies that are installers are already in installerBytes.
+  let installerBytes = 0;
+  for (const f of installers) installerBytes += f.size;
+  let duplicateBytes = 0;
+  for (const g of duplicateGroups) for (const f of g.files.slice(1)) if (!isInstaller(f)) duplicateBytes += f.size;
+  const totalSavings = installerBytes + duplicateBytes;
   const breakdown = computeBreakdown(files);
 
   return {
@@ -60,6 +62,8 @@ function* statsPhases(scan: ScanResult): Generator<void, ReceiptStats, void> {
     items,
     installers,
     duplicateGroups,
+    installerBytes,
+    duplicateBytes,
     totalSavings,
     breakdown,
     skipped: { ...scan.skipped },
