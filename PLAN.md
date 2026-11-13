@@ -102,8 +102,8 @@ type ReceiptStats = {
 **Verify:** `typecheck`, `lint`, `test` (one smoke test), `build`. Then `preview` with Playwright screenshots at 1280px and 390px in **Chromium and WebKit**, the console checked for CSP violations, and the CSP meta tag confirmed in `dist/index.html`. You also open the page once in real Safari.
 
 ### 2. Stats engine (pure functions, test first)
-- [ ] `src/lib/stats/`: `categories.ts`, `computeStats.ts`, `breakdown.ts`, `format.ts`, `receiptNo.ts` (a short deterministic hash of root name, count, bytes and time).
-- [ ] The tests are written first and cover:
+- [x] `src/lib/stats/`: `categories.ts`, `computeStats.ts`, `breakdown.ts`, `format.ts`, `receiptNo.ts` (a short deterministic hash of root name, count, bytes and time).
+- [x] The tests are written first and cover:
   - totals;
   - largest, including ties and the empty case;
   - not modified in a year, including the boundary and leap day;
@@ -113,7 +113,7 @@ type ReceiptStats = {
   - the breakdown always summing to 100, as a property-style loop over random inputs, with each segment ≥1% and at most 6 segments;
   - formatting;
   - the 0-file case.
-- [ ] A perf check: a synthetic 100k-record fixture must compute in under 100ms. If it doesn't, it gets logged and Worker plans start.
+- [x] A perf check: a synthetic 100k-record fixture must compute in under 100ms. If it doesn't, it gets logged and Worker plans start. Measured: ~32ms in Node after bucketing duplicates by size first (was ~58ms).
 
 **Verify:** `test` output showing all passing, plus `typecheck`, `lint` and `build`.
 

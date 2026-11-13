@@ -7,7 +7,7 @@ export default defineConfig({
   reporter: 'list',
   use: { baseURL: 'http://localhost:4173' },
   webServer: {
-    command: 'vite build && vite preview --port 4173 --strictPort',
+    command: 'pnpm build && vite preview --port 4173 --strictPort',
     url: 'http://localhost:4173',
     reuseExistingServer: false,
     timeout: 120_000,
