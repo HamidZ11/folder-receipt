@@ -4,3 +4,7 @@ dist/
 .DS_Store
 *.log
 docs/CONTEXT.md
+test-results/
+playwright-report/
+screens/
+*.tsbuildinfo

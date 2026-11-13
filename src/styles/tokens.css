@@ -1,0 +1,120 @@
+/*
+ * Folder Receipt — design tokens.
+ * THE ONLY FILE WITH VISUAL VALUES. Every value here is a placeholder
+ * taken from the CONTEXT.md §2 mock; restyle the app by editing this file.
+ *
+ * Tailwind v4 reads @theme and generates utilities from it
+ * (e.g. --color-paper -> bg-paper / text-paper, --radius-card -> rounded-card).
+ * Tailwind's default palette, fonts, radii, shadows and easings are cleared
+ * so nothing outside this file can leak into the UI.
+ */
+
+@theme {
+  /* ---- Reset Tailwind defaults ---- */
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
+
+  /* ---- Colour: page ---- */
+  --color-page: #111111;
+  --color-surface: #191919; /* drop-zone card */
+  --color-surface-line: rgb(255 255 255 / 0.08); /* 1px border on dark */
+  --color-surface-line-active: rgb(255 255 255 / 0.24); /* drag-over */
+  --color-text: #f5f5f4;
+  --color-text-muted: #8a8a87;
+
+  /* ---- Colour: receipt paper ---- */
+  --color-paper: #f3f1ec;
+  --color-ink: #1b1b1a;
+  --color-ink-muted: #6f6d68;
+  --color-hairline: rgb(27 27 26 / 0.14);
+
+  /* ---- Colour: the one accent + breakdown segments (tints of the accent) ---- */
+  --color-accent: #2f6bff;
+  --color-segment-1: #2f6bff;
+  --color-segment-2: #7ea2ff;
+  --color-segment-3: #b4c8ff;
+  --color-segment-4: #a3a19c;
+  --color-segment-5: #c9c7c1;
+  --color-segment-6: #dedcd6;
+
+  /* ---- Colour: status ---- */
+  --color-danger: #e5484d;
+  --color-focus: #7ea2ff;
+
+  /* ---- Type: max 2 families. System stacks = no font files to load or embed ---- */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Scale: size / line-height / tracking */
+  --text-label: 0.6875rem; /* 11px, uppercase section labels */
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.08em;
+  --text-small: 0.8125rem; /* 13px */
+  --text-small--line-height: 1.25rem;
+  --text-body: 0.9375rem; /* 15px */
+  --text-body--line-height: 1.5rem;
+  --text-title: 1.0625rem; /* 17px */
+  --text-title--line-height: 1.5rem;
+  --text-title--letter-spacing: -0.01em;
+  --text-total: 1.375rem; /* 22px, total savings */
+  --text-total--line-height: 1.75rem;
+  --text-total--letter-spacing: -0.02em;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* ---- Spacing: 4px base. Tailwind's p-4 = 4 × --spacing ---- */
+  --spacing: 4px;
+
+  /* ---- Layout ---- */
+  --container-receipt: 26rem; /* 416px column; fits 390px screens with page gutter */
+
+  /* ---- Radii ---- */
+  --radius-card: 16px;
+  --radius-control: 10px;
+  --radius-bar: 3px;
+
+  /* ---- Shadows (layered: small sharp + large soft) ---- */
+  --shadow-paper: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+
+  /* ---- Motion: easings (never ease-in) ---- */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Values Tailwind has no theme namespace for. Still tokens; still only here. */
+:root {
+  /* Hairline thickness */
+  --hairline-width: 1px;
+
+  /* Page gutters */
+  --page-gutter: 16px;
+  --page-gutter-wide: 32px;
+
+  /* Motion: durations */
+  --duration-press: 120ms;
+  --duration-hover: 150ms;
+  --duration-expand: 240ms;
+  --duration-fade: 200ms;
+
+  /* Motion: print animation (slice 5). Total budget is a hard cap. */
+  --print-budget: 2500ms;
+  --print-feed-duration: 900ms;
+  --print-row-duration: 240ms;
+  --print-row-stagger: 35ms;
+  --print-row-offset: 4px;
+  --print-ease-feed: cubic-bezier(0.32, 0.72, 0, 1);
+  --print-ease-row: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Press feedback */
+  --press-scale: 0.97;
+}
