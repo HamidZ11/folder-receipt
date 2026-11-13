@@ -22,8 +22,9 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 ## Overnight run (13 Nov, ~30 min budget)
 
 - **Done:** slice 6 (expandable sections) and slice 7 (PNG export). See below.
-- **In progress:** fresh-context review (subagent running); its findings go under "Review findings" when it returns.
-- **Next:** fix any Critical/High review findings, one commit each.
+- **Done:** fresh-context review. No Critical or High findings; see "Review findings" at the end.
+- **In progress:** nothing.
+- **Next:** Medium findings 1–3 (cheap, recommended), then ship-check and deploy.
 
 ### Slice 6 — expandable sections (done)
 - "List n files" under Items (every file), Files not modified in a year, Leftover installers and Duplicates (extra copies).
@@ -88,3 +89,25 @@ pnpm build && pnpm preview    # production build with the CSP, http://localhost:
 ```
 
 e2e uses its own build in `dist-e2e/` (with the toggle) on port 4174, with one worker so the timing tests don't share the CPU. Screenshots go to `screens/` (git-ignored).
+
+## Review findings
+
+Fresh-context subagent review of `git diff main...v1` against BRIEF.md and PLAN.md, run 13 Nov at commit `39fa2e0` (before slices 6–7). **Critical: none. High: none.** No fixes were required by the overnight-run rules. The Medium and Low findings below are left for the next session.
+
+### Medium
+1. **Unreadable root folder.** `src/lib/ingest/walkEntries.ts:38-44`: if the dropped root folder can't be read, the walk counts it as unreadable and prints an empty "0 files" receipt instead of the `unreadable` error. Fix: rethrow when the root read fails (`segs.length === 0`).
+2. **A cancelled pick clears a newer pick's files.** `src/components/DropZone.tsx:93-99` with `useFolderScan.ts`: the cancelled scan's `finally` clears the file input. In Firefox the `FileList` is live, so a newer pick's scan could be cut short. Reasoned from Gecko's implementation, not run. Fix: a pick generation counter; only the latest pick clears the input.
+3. **Firefox isn't tested** (BRIEF drift). BRIEF names Chrome, Safari and Firefox, but e2e covers Chromium and WebKit only. Fix: add a `firefox` Playwright project for the ingest and print specs, plus a manual Firefox drag test.
+
+### Low
+4. **An invalid drop during a scan shows its error for one frame.** `useFolderScan.ts:79-85`: the next counter update overwrites it, and the old paper's fade restarts. Fix: ignore invalid drops while scanning, or abort the scan first.
+5. **A superseded scan can briefly overwrite the new scan's status.** `useFolderScan.ts:49-52`: its pending frame update still fires. Fix: in `flush`, `if (current.current !== ac) return;`.
+6. **`.photoslibrary` can still be truncated.** The extension is 13 characters, but `FileName.tsx` has `MAX_EXT = 12` and `MiddleTruncate.tsx` has 12. Fix: raise both to 13 and add a test.
+7. **The privacy line slightly overclaims.** `copy.ts:43-44`: the CSP doesn't cover top-level navigation, `window.open` or WebRTC. Fix: soften the copy (Hamid's call), and optionally lint-ban those APIs.
+8. **CSP checks are partial.** e2e only checks `connect-src`, `csp.test.ts` doesn't ban `unsafe-*`, and `check:prod` passes trivially if `dist/assets` is missing. Fix: assert the meta tag equals `CSP_META`, ban `unsafe-*`, and add `test -d dist/assets` to `check:prod`.
+9. **The receipt break-ui e2e can check the sample instead of the fixture** (`receipt.spec.ts:25-32`). The toggle's pressed state renders before the fixture receipt arrives. Fix: wait for something only the fixture has, such as its folder name or total.
+10. **Two print tests pass even if the print never starts** ("key skips" and "once per session" in `print.spec.ts`). Fix: assert `running` before the key press.
+11. **The "drop mid-print" test never checks the fade or the finished print.** Fix: assert the opacity animation and the earlier print's `finished` state right after the pick.
+12. **The frame-trace wall time includes frames after the print ended.** Fix: cap the window at `startTime + duration`. It also measures main-thread frames, not compositor frames.
+13. **Hard wall-clock limits in the gates** (`computeStats` < 100ms; 0ms input blocking) can fail on slower machines. Fix: put them behind an env flag or give them generous margins.
+14. **The synthetic "dropped a file" e2e may pass through the wrong code branch.** Fix: unit-test `folderFromDrop` with fake items.
