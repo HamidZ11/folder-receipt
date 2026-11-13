@@ -4,6 +4,7 @@ import { isInstaller } from '../../lib/stats/categories.ts';
 import { formatBytes, formatCount, formatDateTime } from '../../lib/stats/format.ts';
 import type { ReceiptStats } from '../../lib/stats/types.ts';
 import { Breakdown } from './Breakdown.tsx';
+import { FileName } from './FileName.tsx';
 import { MiddleTruncate } from './MiddleTruncate.tsx';
 import { Divider, Row, SectionLabel } from './parts.tsx';
 
@@ -39,15 +40,6 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
       <dl>
         <Row label={t.labels.totalFiles} value={formatCount(stats.totalFiles)} />
         <Row label={t.labels.totalSize} value={formatBytes(stats.totalBytes)} />
-        <Row label={t.labels.largest} value={stats.largest ? formatBytes(stats.largest.size) : t.none} />
-      </dl>
-      {stats.largest && (
-        // The name gets its own line so it isn't squeezed by the label and size.
-        <p data-row className="-mt-0.5 pb-0.5 text-right text-small text-ink-muted">
-          <MiddleTruncate text={stats.largest.name} />
-        </p>
-      )}
-      <dl>
         <Row label={t.labels.notModified} value={formatCount(stats.notModifiedInAYear.length)} />
       </dl>
 
@@ -134,13 +126,14 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
   );
 }
 
+/** Name and size side by side; the size wraps under the name when even the shortest name won't fit. */
 function ItemRow({ name, size }: { name: string; size: number }) {
   return (
-    <div data-row className="flex items-baseline justify-between gap-4 py-0.5">
-      <dt className="min-w-0 flex-1">
-        <MiddleTruncate text={name} />
+    <div data-row className="flex flex-wrap items-baseline justify-between gap-x-4 py-0.5">
+      <dt className="grow basis-0">
+        <FileName name={name} />
       </dt>
-      <dd className="num shrink-0 text-right">{formatBytes(size)}</dd>
+      <dd className="num ml-auto shrink-0 text-right">{formatBytes(size)}</dd>
     </div>
   );
 }

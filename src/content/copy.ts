@@ -52,7 +52,6 @@ export const copy = {
     labels: {
       totalFiles: 'Total files',
       totalSize: 'Total size',
-      largest: 'Largest file',
       notModified: 'Files not modified in a year',
       installers: 'Leftover installers',
       duplicates: 'Duplicates',

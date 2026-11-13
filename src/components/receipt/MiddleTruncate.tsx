@@ -1,5 +1,5 @@
-// File names differ at the end ("…v12-final.pdf"), so truncate in the middle:
-// the head shrinks with an ellipsis, the tail (with the extension) always shows.
+// Middle truncation for the folder name (file names use FileName.tsx, which
+// never cuts the extension). The head shrinks with an ellipsis, the tail stays.
 // Pure CSS, so it adapts to any width. Split by grapheme so emoji never break.
 
 const TAIL_BEFORE_EXT = 6;

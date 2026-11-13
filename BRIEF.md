@@ -17,7 +17,7 @@ Owner: Hamid (leads the project, designs the final look). Status: decisions lock
 | Block | Content |
 |---|---|
 | Header | Receipt number, date/time, folder name |
-| Summary | Total files · Total size · Largest file (name + size) · **Files not modified in a year** (exact wording; never "untouched" or "opened") |
+| Summary | Total files · Total size · **Files not modified in a year** (exact wording; never "untouched" or "opened"). The largest file is Items #1, so it isn't repeated (changed 13 Nov) |
 | Items | Top 5 largest files, each priced by its size |
 | Discounts | Leftover installers (`.dmg` `.pkg` `.exe` `.msi`) · Duplicates (same name + same size, no hashing) |
 | Total savings | Space you could reclaim (installers + duplicate copies, nothing counted twice) |
