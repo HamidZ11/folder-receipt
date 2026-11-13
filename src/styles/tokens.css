@@ -113,7 +113,8 @@
   --duration-fade: 200ms;
 
   /* Motion: print (slice 5). Print-while-feeding: only the paper moves.
-     It feeds down out of the slot at a constant speed (linear), then lands
+     It rises out of the slot below it, header first (till printer), at a
+     constant speed (linear), then lands
      with a short ease-out. The landing distance is derived from the curve's
      starting slope so the speed doesn't jump at the join (src/lib/print/feed.ts). */
   --print-feed-speed: 520; /* px per second; duration = paper height / speed */

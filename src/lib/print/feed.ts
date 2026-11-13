@@ -33,12 +33,17 @@ export function landingDistance(t: FeedTokens): number {
   return 1 / (1 + (slope * (1 - t.landing)) / t.landing);
 }
 
-/** WAAPI keyframes for translateY(-100%) → 0 with a linear feed and a matched ease-out landing. */
-export function feedKeyframes(t: FeedTokens): Keyframe[] {
+/**
+ * WAAPI keyframes: the paper rises out of a slot below it (header first, like a
+ * till printer). It starts `distancePx` below its resting place (its height plus
+ * the slot bleed, so nothing shows before the feed), feeds up at a constant
+ * speed, then lands with the matched ease-out.
+ */
+export function feedKeyframes(t: FeedTokens, distancePx: number): Keyframe[] {
   const dl = landingDistance(t);
   return [
-    { transform: 'translateY(-100%)', offset: 0, easing: 'linear' },
-    { transform: `translateY(${(-dl * 100).toFixed(3)}%)`, offset: 1 - t.landing, easing: t.landingEase },
+    { transform: `translateY(${distancePx.toFixed(2)}px)`, offset: 0, easing: 'linear' },
+    { transform: `translateY(${(dl * distancePx).toFixed(2)}px)`, offset: 1 - t.landing, easing: t.landingEase },
     { transform: 'translateY(0)', offset: 1 },
   ];
 }
@@ -64,6 +69,7 @@ export function readFeedTokens(root: Element = document.documentElement) {
       landingEase: v('--print-ease-landing'),
     } satisfies FeedTokens,
     exitMs: parseTime(v('--print-exit-duration')),
+    bleedPx: parseFloat(v('--print-slot-bleed')),
     reducedMs: parseTime(v('--print-reduced-fade')),
   };
 }

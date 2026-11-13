@@ -9,7 +9,8 @@ const isEditable = (t: EventTarget | null) =>
 const MODIFIERS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab']);
 
 /**
- * The print: only the paper moves. It feeds down out of the slot (WAAPI on
+ * The print: only the paper moves. It rises up out of the slot below it, header
+ * first, like a till printer (WAAPI on
  * transform, so it runs on the compositor). Click, tap or a key skips to the
  * end with finish(); the skip itself never animates.
  */
@@ -53,13 +54,14 @@ export function usePrint(paper: RefObject<HTMLElement | null>, receipt: Receipt,
       }
     }
 
-    const { feed, reducedMs } = readFeedTokens();
+    const { feed, reducedMs, bleedPx } = readFeedTokens();
+    const height = el.getBoundingClientRect().height;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const anim = reduced
       ? // Entering → strong ease-out, same curve as the landing.
         el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reducedMs, easing: feed.landingEase, fill: 'backwards' })
-      : el.animate(feedKeyframes(feed), {
-          duration: feedDuration(el.getBoundingClientRect().height, feed),
+      : el.animate(feedKeyframes(feed, height + bleedPx), {
+          duration: feedDuration(height, feed),
           fill: 'backwards',
         });
     print.current = anim;

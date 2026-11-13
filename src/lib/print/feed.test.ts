@@ -29,10 +29,11 @@ describe('feed', () => {
     expect(dl).toBeLessThan(0.05); // short landing: ~4% of the distance
   });
 
-  it('keyframes run -100% → 0 with linear then the landing curve', () => {
-    const k = feedKeyframes(T);
-    expect(k[0]).toMatchObject({ transform: 'translateY(-100%)', offset: 0, easing: 'linear' });
+  it('keyframes rise from below (header first): +distance → 0, linear then the landing curve', () => {
+    const k = feedKeyframes(T, 926);
+    expect(k[0]).toMatchObject({ transform: 'translateY(926.00px)', offset: 0, easing: 'linear' });
     expect(k[1]).toMatchObject({ offset: 0.85, easing: T.landingEase });
+    expect(k[1]!.transform).toBe(`translateY(${(landingDistance(T) * 926).toFixed(2)}px)`);
     expect(k[2]).toMatchObject({ transform: 'translateY(0)', offset: 1 });
   });
 });

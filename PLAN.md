@@ -172,7 +172,7 @@ type ReceiptStats = {
 ### 5. Print animation (signature)
 Changed 13 Nov: print-while-feeding, no row stagger, no NumberFlow.
 - [x] Design pass: emil-design-eng → animate → choreograph. The timeline was shown first, and the row stagger was dropped in favour of print-while-feeding.
-- [x] The slot is an `overflow: hidden` container. The fully rendered paper feeds down with `translateY(-100%) → 0`, so rows appear as they emerge (footer first, as from a printer mounted above). Only `transform` animates.
+- [x] The slot is the bottom edge of an `overflow: hidden` container. The fully rendered paper rises out of it, header first, like a till printer: `translateY(height + bleed px) → 0`. Changed from feeding down (footer first) on 13 Nov. Only `transform` animates.
 - [x] Feed: duration = paper height / 520px·s⁻¹, clamped to 1.4–2.2s. It runs linear (constant speed) for 85% of the time, then lands with `--ease-out` over the last 15%. The landing distance (~3.9%) is derived from the curve's starting slope, so speed is continuous at the join. All values are in `tokens.css`.
 - [x] WAAPI. A click, tap or any non-modifier key outside text fields calls `finish()`. The skip doesn't animate and doesn't block the click.
 - [x] A new scan finishes the current print, then the old paper fades out (150ms ease-out) and keeps its space. If the scan fails, the old paper comes back.

@@ -92,6 +92,27 @@ test.describe('print (Chromium)', () => {
     await expect(page.getByTestId('paper')).not.toHaveAttribute('aria-busy');
   });
 
+  test('header first: the paper rises from the slot below, so the header shows before the footer', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+    const r = await page.evaluate(() => {
+      const paper = document.querySelector('[data-testid="paper"]')!;
+      const a = paper.getAnimations()[0]!;
+      a.pause();
+      a.currentTime = Number(a.effect!.getTiming().duration) * 0.3;
+      const slot = document.querySelector('[data-testid="slot"]')!.getBoundingClientRect();
+      const rows = [...paper.querySelectorAll('[data-row]')];
+      const first = rows[0]!.getBoundingClientRect();
+      const last = rows.at(-1)!.getBoundingClientRect();
+      const start = (a.effect as KeyframeEffect).getKeyframes()[0]!.transform as string;
+      a.finish();
+      return { slotBottom: slot.bottom, headerBottom: first.bottom, footerTop: last.top, start };
+    });
+    expect(r.start).toMatch(/^translateY\(\d/); // starts below (positive offset)
+    expect(r.headerBottom, 'header is out of the slot at 30%').toBeLessThan(r.slotBottom);
+    expect(r.footerTop, 'footer is still inside the slot at 30%').toBeGreaterThan(r.slotBottom);
+  });
+
   test('click skips straight to the end', async ({ page }) => {
     await page.goto('/');
     await page.waitForTimeout(300);

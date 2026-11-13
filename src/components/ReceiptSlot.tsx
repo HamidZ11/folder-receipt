@@ -4,9 +4,10 @@ import type { Receipt as ReceiptData } from '../hooks/useFolderScan.ts';
 import { usePrint } from '../hooks/usePrint.ts';
 import { Receipt } from './receipt/Receipt.tsx';
 
-// The printer slot: overflow hidden, so the paper is invisible above its top
-// edge and appears as it feeds down. Sibling of the drop zone, never nested.
-// The bleed gives the paper's shadow room inside the clip.
+// The printer slot is the bottom edge of this overflow:hidden box. The paper
+// starts below it (invisible) and rises out of it, header first, like a till
+// printer. Sibling of the drop zone, never nested. The bleed gives the paper's
+// shadow room inside the clip.
 export function ReceiptSlot({ receipt, scanning }: { receipt: ReceiptData; scanning: boolean }) {
   const paper = useRef<HTMLDivElement>(null);
   usePrint(paper, receipt, scanning);
