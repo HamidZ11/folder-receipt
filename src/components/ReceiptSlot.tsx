@@ -18,7 +18,7 @@ export function ReceiptSlot({ receipt, scanning }: { receipt: ReceiptData; scann
       className="relative -mx-(--print-slot-bleed) overflow-hidden px-(--print-slot-bleed) pb-(--print-slot-bleed)"
     >
       <div ref={paper} data-testid="paper">
-        <Receipt stats={receipt.stats} sample={receipt.source === 'sample'} />
+        <Receipt stats={receipt.stats} files={receipt.scan.files} sample={receipt.source === 'sample'} />
       </div>
     </section>
   );

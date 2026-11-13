@@ -19,9 +19,26 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - once per session;
 - a drop mid-print.
 
+## Overnight run (13 Nov, ~30 min budget)
+
+- **Done:** slice 6, expandable sections. See below.
+- **In progress:** fresh-context review (subagent running); Critical/High fixes follow.
+- **Next:** slice 7 export with `modern-screenshot`.
+
+### Slice 6 — expandable sections (done)
+- "List n files" under Items (every file), Files not modified in a year, Leftover installers and Duplicates (extra copies).
+- Table sortable by Name (natural, case-insensitive), Size and Modified, with `aria-sort`. The first click on a column uses its natural direction; clicking again reverses it.
+- Hand-rolled fixed-row virtualisation: 32px rows (8 × `--spacing`, read from the token) and a 10-row viewport. Only the visible window plus 4 rows of overscan is in the DOM; e2e checks that 100k files stays under 30 rows, including at the bottom.
+- Motion: `grid-template-rows` 0fr → 1fr over `--duration-expand` with `--ease-out`, and none under reduced motion. Closed lists are `inert`. review-animations: Approve (height animation is the sanctioned case for accordion-style disclosure).
+
+## Decisions I made (reversible)
+
+- **The breakdown bar has no list.** Category lists would repeat the Items table filtered by type. Undo: add an `Expandable` per breakdown segment.
+- **Expand control:** a muted underlined text button under each section ("List 1,210 files" / "Hide list"). These are placeholder visuals from tokens. The copy is new and lives in `copy.ts` under `receipt.expand`.
+- **Tables mount on first open and stay mounted** so the collapse can animate. Undo: unmount on `transitionend`.
+
 ## Left
 
-1. **Slice 6 — expandable sections.** Each section expands into a sorted file table, with hand-rolled fixed-row virtualisation (no `@tanstack/react-virtual`). Run review-animations and check at 390px.
 2. **Slice 7 — PNG export with redaction.**
    - Tall and square crops.
    - Names redacted by default, with a toggle.

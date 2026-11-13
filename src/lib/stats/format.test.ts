@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatBytes, formatCount, formatDateTime, formatPercent } from './format.ts';
+import { formatBytes, formatCount, formatDate, formatDateTime, formatPercent } from './format.ts';
 
 describe('formatBytes (decimal, like Finder)', () => {
   it.each([
@@ -37,4 +37,8 @@ describe('formatDateTime', () => {
   it('en-GB date and 24h time in the given zone', () => {
     expect(formatDateTime(Date.UTC(2026, 10, 13, 15, 43), 'UTC')).toBe('13 Nov 2026, 15:43');
   });
+});
+
+describe('formatDate', () => {
+  it('en-GB short date', () => expect(formatDate(Date.UTC(2025, 10, 13, 12), 'UTC')).toBe('13 Nov 2025'));
 });

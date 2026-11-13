@@ -182,10 +182,10 @@ Changed 13 Nov: print-while-feeding, no row stagger, no NumberFlow.
 
 **Verify:** Chromium frame trace and duration (e2e/print.spec.ts), skip by click and key, modifier keys don't skip, once per session, reduced motion, drop mid-print. WebKit end-state screenshot at 390px.
 
-### 6. Expandable sections (later session)
-- [ ] Each section expands into a sorted table, sortable by size, name or date. Long lists are virtualised.
-- [ ] The expand motion follows the transitions.dev reference (motion only).
-- [ ] review-animations runs, and 390px is checked.
+### 6. Expandable sections (done in the overnight run, 13 Nov)
+- [x] Each section expands into a table sortable by size, name and date. Virtualisation is hand-rolled with fixed rows.
+- [x] The expand motion uses `grid-template-rows` with `--duration-expand` and `--ease-out`, and none under reduced motion. Closed lists are `inert`.
+- [x] review-animations: Approve. Checked at 390px (e2e screenshots `screens/slice-6/`).
 
 ### 7. Export with redaction (later session)
 - [ ] Tall and square PNG.

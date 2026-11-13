@@ -2,18 +2,21 @@ import { SITE_URL } from '../../config.ts';
 import { copy } from '../../content/copy.ts';
 import { isInstaller } from '../../lib/stats/categories.ts';
 import { formatBytes, formatCount, formatDateTime } from '../../lib/stats/format.ts';
-import type { ReceiptStats } from '../../lib/stats/types.ts';
+import type { FileRecord, ReceiptStats } from '../../lib/stats/types.ts';
 import { Breakdown } from './Breakdown.tsx';
+import { Expandable } from './Expandable.tsx';
 import { FileName } from './FileName.tsx';
 import { MiddleTruncate } from './MiddleTruncate.tsx';
 import { Divider, Row, SectionLabel } from './parts.tsx';
 
 const minus = (n: number) => (n > 0 ? `−${formatBytes(n)}` : formatBytes(0)); // U+2212
 
-export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolean }) {
+export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: readonly FileRecord[]; sample: boolean }) {
   const t = copy.receipt;
   const folder = stats.folderName || t.untitledFolder;
-  const dupCopies = stats.duplicateGroups.reduce((n, g) => n + g.files.slice(1).filter((f) => !isInstaller(f)).length, 0);
+  const dupFiles = stats.duplicateGroups.flatMap((g) => g.files.slice(1).filter((f) => !isInstaller(f)));
+  const dupCopies = dupFiles.length;
+  const n = (count: number, noun: string) => `${formatCount(count)} ${noun}`;
 
   return (
     <article
@@ -42,6 +45,11 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
         <Row label={t.labels.totalSize} value={formatBytes(stats.totalBytes)} />
         <Row label={t.labels.notModified} value={formatCount(stats.notModifiedInAYear.length)} />
       </dl>
+      <Expandable
+        files={stats.notModifiedInAYear}
+        what={t.labels.notModified}
+        countText={n(stats.notModifiedInAYear.length, stats.notModifiedInAYear.length === 1 ? 'file' : 'files')}
+      />
 
       <Divider />
 
@@ -59,6 +67,7 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
             ))}
           </dl>
         )}
+        <Expandable files={files} what={t.sections.items} countText={n(files.length, files.length === 1 ? 'file' : 'files')} />
       </section>
 
       <Divider />
@@ -77,6 +86,7 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
           />
         </dl>
         {stats.installers.length > 0 && <Caption>{t.discountCaptions.installers}</Caption>}
+        <Expandable files={stats.installers} what={t.labels.installers} countText={n(stats.installers.length, stats.installers.length === 1 ? 'installer' : 'installers')} />
         <dl className="mt-2">
           <Row
             label={
@@ -88,6 +98,7 @@ export function Receipt({ stats, sample }: { stats: ReceiptStats; sample: boolea
           />
         </dl>
         {dupCopies > 0 && <Caption>{t.discountCaptions.duplicates}</Caption>}
+        <Expandable files={dupFiles} what={t.labels.duplicates} countText={n(dupCopies, dupCopies === 1 ? 'copy' : 'copies')} />
       </section>
 
       <Divider />

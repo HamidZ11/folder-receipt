@@ -63,6 +63,12 @@ export const copy = {
       breakdown: 'Where your space went',
     },
     none: '—',
+    expand: {
+      show: (n: string) => `List ${n}`,
+      hide: 'Hide list',
+      columns: { name: 'Name', size: 'Size', date: 'Modified' },
+      tableLabel: (what: string) => `${what}: file list`,
+    },
     empty: {
       items: 'No items.',
       breakdown: 'No space used.',

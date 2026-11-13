@@ -32,3 +32,8 @@ export function formatDateTime(ms: number, timeZone?: string): string {
   const time = new Intl.DateTimeFormat(LOCALE, { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }).format(d);
   return `${date}, ${time}`;
 }
+
+/** e.g. "13 Nov 2025". */
+export function formatDate(ms: number, timeZone?: string): string {
+  return new Intl.DateTimeFormat(LOCALE, { day: 'numeric', month: 'short', year: 'numeric', timeZone }).format(new Date(ms));
+}
