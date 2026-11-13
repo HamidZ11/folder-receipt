@@ -12,7 +12,7 @@ const readParam = (): FixtureName | null => {
 
 function build(name: FixtureName): Receipt {
   const scan = makeFixture(name, Date.now());
-  return { scan, stats: computeStats(scan), source: name === 'demo' ? 'sample' : 'folder' };
+  return { scan, stats: computeStats(scan), source: name === 'demo' ? 'sample' : 'folder', print: false };
 }
 
 export default function DevData({ onChange }: { onChange: (r: Receipt | null) => void }) {

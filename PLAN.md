@@ -170,24 +170,17 @@ type ReceiptStats = {
 - Safari: the status line says "hidden files and .git not visible in Safari" instead of showing zeros.
 
 ### 5. Print animation (signature)
-- [ ] Design pass using **emil-design-eng → animate → choreograph** (I'll read the project's `.claude/skills/*` before writing any motion code). I'll show you the choreography as a timeline table before implementing it.
-- [ ] Starting shape, to be refined by those skills:
-  - A slot element sits above the receipt.
-  - The slot is an `overflow: hidden` container. The paper feeds out with `translateY` at a fixed duration whatever its height. **No clip-path.**
-  - Rows then reveal top to bottom (opacity plus a small `translateY`).
-  - The stagger is clamped so that `feed + (rows−1)·stagger + row ≤ 2.5s`.
-  - All durations and easings are read from `tokens.css`.
-- [ ] It's driven by WAAPI, so **skip** (click, tap, or any non-modifier key outside inputs) calls `finish()` on every animation and lands on the exact end state.
-- [ ] `prefers-reduced-motion`: a single opacity fade of the whole receipt, with no feed and no stagger.
-- [ ] Only `transform` and `opacity` are animated. **animation-performance** runs if any frame drops.
-- [ ] No auto-scroll. Rows below the fold are already revealed when you scroll to them.
-- [ ] **review-animations** runs on the diff before commit, and every Block is fixed.
+Changed 13 Nov: print-while-feeding, no row stagger, no NumberFlow.
+- [x] Design pass: emil-design-eng → animate → choreograph. The timeline was shown first, and the row stagger was dropped in favour of print-while-feeding.
+- [x] The slot is an `overflow: hidden` container. The fully rendered paper feeds down with `translateY(-100%) → 0`, so rows appear as they emerge (footer first, as from a printer mounted above). Only `transform` animates.
+- [x] Feed: duration = paper height / 520px·s⁻¹, clamped to 1.4–2.2s. It runs linear (constant speed) for 85% of the time, then lands with `--ease-out` over the last 15%. The landing distance (~3.9%) is derived from the curve's starting slope, so speed is continuous at the join. All values are in `tokens.css`.
+- [x] WAAPI. A click, tap or any non-modifier key outside text fields calls `finish()`. The skip doesn't animate and doesn't block the click.
+- [x] A new scan finishes the current print, then the old paper fades out (150ms ease-out) and keeps its space. If the scan fails, the old paper comes back.
+- [x] Reduced motion: a 200ms opacity fade only.
+- [x] The sample prints once per session (`sessionStorage`, set when the print starts). Folder receipts always print. No auto-scroll.
+- [x] review-animations: one finding (the reduced-motion fade used built-in `ease`), fixed. Approve.
 
-**Verify:**
-- typecheck, lint, test and build.
-- Playwright: a frame-timing trace of the print (Chromium), a measured total duration under 2.5s, skip tested by both click and key, and the reduced-motion emulation showing a fade only.
-- Screenshots at mid-print and end state, at both widths and in both engines.
-- You watch it once in Safari.
+**Verify:** Chromium frame trace and duration (e2e/print.spec.ts), skip by click and key, modifier keys don't skip, once per session, reduced motion, drop mid-print. WebKit end-state screenshot at 390px.
 
 ### 6. Expandable sections (later session)
 - [ ] Each section expands into a sorted table, sortable by size, name or date. Long lists are virtualised.

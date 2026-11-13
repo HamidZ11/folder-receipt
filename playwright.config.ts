@@ -7,6 +7,8 @@ export default defineConfig({
   testDir: './e2e',
   outputDir: './test-results',
   reporter: 'list',
+  // One worker: the frame-trace and long-task tests measure timing, so nothing may compete for the CPU.
+  workers: 1,
   use: { baseURL: 'http://localhost:4174' },
   webServer: {
     command: 'VITE_WORST_CASES=1 pnpm build --outDir dist-e2e && vite preview --outDir dist-e2e --port 4174 --strictPort',

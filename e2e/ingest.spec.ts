@@ -1,6 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { makeTree, removeTree } from './tree.ts';
 
+
+// The sample prints once per session; these specs test the static receipt.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('fr-sample-printed', '1'));
+});
+
 // Chromium: 100k files with a main-thread budget. WebKit: 5k files, functional.
 const SIZE = { chromium: 100_000, webkit: 5_000 } as const;
 

@@ -112,14 +112,18 @@
   --duration-expand: 240ms;
   --duration-fade: 200ms;
 
-  /* Motion: print animation (slice 5). Total budget is a hard cap. */
-  --print-budget: 2500ms;
-  --print-feed-duration: 900ms;
-  --print-row-duration: 240ms;
-  --print-row-stagger: 35ms;
-  --print-row-offset: 4px;
-  --print-ease-feed: cubic-bezier(0.32, 0.72, 0, 1);
-  --print-ease-row: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Motion: print (slice 5). Print-while-feeding: only the paper moves.
+     It feeds down out of the slot at a constant speed (linear), then lands
+     with a short ease-out. The landing distance is derived from the curve's
+     starting slope so the speed doesn't jump at the join (src/lib/print/feed.ts). */
+  --print-feed-speed: 520; /* px per second; duration = paper height / speed */
+  --print-feed-min: 1400ms;
+  --print-feed-max: 2200ms;
+  --print-feed-landing: 0.15; /* share of the duration spent landing */
+  --print-ease-landing: cubic-bezier(0.23, 1, 0.32, 1); /* same curve as --ease-out */
+  --print-exit-duration: 150ms; /* old receipt fades out when a new scan starts */
+  --print-reduced-fade: 200ms; /* prefers-reduced-motion: fade only */
+  --print-slot-bleed: 16px; /* room inside the slot for the paper's shadow */
 
   /* Press feedback */
   --press-scale: 0.97;

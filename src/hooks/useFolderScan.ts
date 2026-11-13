@@ -6,19 +6,28 @@ import { makeYielder } from '../lib/ingest/yieldToMain.ts';
 import { makeSampleScan } from '../lib/sample/sampleFolder.ts';
 import { computeStats, computeStatsSliced } from '../lib/stats/computeStats.ts';
 import type { ReceiptStats, ScanResult } from '../lib/stats/types.ts';
+import { SAMPLE_PRINTED_KEY } from './usePrint.ts';
 
 export type ScanError = 'notAFolder' | 'multiple' | 'unsupported' | 'unreadable';
 
-export type Receipt = { scan: ScanResult; stats: ReceiptStats; source: 'sample' | 'folder' };
+/** print: whether this receipt plays the print animation when it appears. */
+export type Receipt = { scan: ScanResult; stats: ReceiptStats; source: 'sample' | 'folder'; print: boolean };
 
 export type ScanStatus =
   | { phase: 'idle' }
   | { phase: 'scanning'; rootName: string; seen: number }
   | { phase: 'error'; error: ScanError };
 
+/** The sample prints once per session; later loads show it static. */
 function sampleReceipt(): Receipt {
   const scan = makeSampleScan(Date.now());
-  return { scan, stats: computeStats(scan), source: 'sample' };
+  let seen = false;
+  try {
+    seen = sessionStorage.getItem(SAMPLE_PRINTED_KEY) === '1';
+  } catch {
+    /* storage blocked: print */
+  }
+  return { scan, stats: computeStats(scan), source: 'sample', print: !seen };
 }
 
 /** One receipt per drop. A new drop cancels a scan in progress. */
@@ -57,7 +66,7 @@ export function useFolderScan() {
       await pause();
       const stats = await computeStatsSliced(result, pause);
       if (ac.signal.aborted) return;
-      setReceipt({ scan: result, stats, source: 'folder' });
+      setReceipt({ scan: result, stats, source: 'folder', print: true });
       setStatus({ phase: 'idle' });
     } catch (e) {
       cancelAnimationFrame(frame);

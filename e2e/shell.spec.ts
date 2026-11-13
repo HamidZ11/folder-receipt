@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+
+// The sample prints once per session; these specs test the static receipt.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('fr-sample-printed', '1'));
+});
+
 const widths = [
   { name: 'desktop', width: 1280, height: 800 },
   { name: 'mobile-390', width: 390, height: 844 },
