@@ -67,6 +67,11 @@ describe('scanDirectoryEntry (drag and drop)', () => {
     expect(r.skipped.unreadable).toBe(2);
   });
 
+  it('an unreadable root folder rejects (shown as an error), not an empty scan', async () => {
+    const p = scanDirectoryEntry(fakeDir('R', { 'a.txt': 1 }, { failDirs: new Set(['R']) }), { now });
+    await expect(p).rejects.toMatchObject({ name: 'NotReadableError' });
+  });
+
   it('reports progress', async () => {
     const seen: number[] = [];
     await scanDirectoryEntry(fakeDir('R', TREE), { now, onProgress: (n) => seen.push(n) });

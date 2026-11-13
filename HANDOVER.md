@@ -24,7 +24,8 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - **Done:** slice 6 (expandable sections) and slice 7 (PNG export). See below.
 - **Done:** fresh-context review. No Critical or High findings; see "Review findings" at the end.
 - **In progress:** nothing.
-- **Next:** Medium findings 1–3 (cheap, recommended), then ship-check and deploy.
+- **Done:** Medium finding 1 (an unreadable root folder now shows the error).
+- **Next:** Medium findings 2–3, then ship-check and deploy.
 
 ### Slice 6 — expandable sections (done)
 - "List n files" under Items (every file), Files not modified in a year, Leftover installers and Duplicates (extra copies).
@@ -95,7 +96,7 @@ e2e uses its own build in `dist-e2e/` (with the toggle) on port 4174, with one w
 Fresh-context subagent review of `git diff main...v1` against BRIEF.md and PLAN.md, run 13 Nov at commit `39fa2e0` (before slices 6–7). **Critical: none. High: none.** No fixes were required by the overnight-run rules. The Medium and Low findings below are left for the next session.
 
 ### Medium
-1. **Unreadable root folder.** `src/lib/ingest/walkEntries.ts:38-44`: if the dropped root folder can't be read, the walk counts it as unreadable and prints an empty "0 files" receipt instead of the `unreadable` error. Fix: rethrow when the root read fails (`segs.length === 0`).
+1. **Fixed (overnight run).** **Unreadable root folder.** `src/lib/ingest/walkEntries.ts:38-44`: if the dropped root folder can't be read, the walk counts it as unreadable and prints an empty "0 files" receipt instead of the `unreadable` error. Fix: rethrow when the root read fails (`segs.length === 0`).
 2. **A cancelled pick clears a newer pick's files.** `src/components/DropZone.tsx:93-99` with `useFolderScan.ts`: the cancelled scan's `finally` clears the file input. In Firefox the `FileList` is live, so a newer pick's scan could be cut short. Reasoned from Gecko's implementation, not run. Fix: a pick generation counter; only the latest pick clears the input.
 3. **Firefox isn't tested** (BRIEF drift). BRIEF names Chrome, Safari and Firefox, but e2e covers Chromium and WebKit only. Fix: add a `firefox` Playwright project for the ingest and print specs, plus a manual Firefox drag test.
 

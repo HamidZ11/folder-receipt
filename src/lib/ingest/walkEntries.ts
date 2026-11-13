@@ -38,7 +38,8 @@ export async function scanDirectoryEntry(root: DirEntryLike, opts: ScanOptions =
     try {
       entries = await readAll(dir, tick);
     } catch (e) {
-      if (isAbort(e)) throw e;
+      // The dropped folder itself can't be read: that's an error, not an empty receipt.
+      if (isAbort(e) || segs.length === 0) throw e;
       b.unreadable++;
       continue;
     }
