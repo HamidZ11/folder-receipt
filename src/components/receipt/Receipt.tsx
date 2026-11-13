@@ -4,6 +4,7 @@ import { isInstaller } from '../../lib/stats/categories.ts';
 import { formatBytes, formatCount, formatDateTime } from '../../lib/stats/format.ts';
 import type { FileRecord, ReceiptStats } from '../../lib/stats/types.ts';
 import { Breakdown } from './Breakdown.tsx';
+import { redactFileName, redactFolderName } from '../../lib/export/redact.ts';
 import { Expandable } from './Expandable.tsx';
 import { FileName } from './FileName.tsx';
 import { MiddleTruncate } from './MiddleTruncate.tsx';
@@ -11,9 +12,20 @@ import { Divider, Row, SectionLabel } from './parts.tsx';
 
 const minus = (n: number) => (n > 0 ? `−${formatBytes(n)}` : formatBytes(0)); // U+2212
 
-export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: readonly FileRecord[]; sample: boolean }) {
+type Props = {
+  stats: ReceiptStats;
+  files: readonly FileRecord[];
+  sample: boolean;
+  /** Export clone: no expandable lists. */
+  forExport?: boolean;
+  /** Replace file and folder names with ▇▇▇▇ (keeping extensions). */
+  redact?: boolean;
+};
+
+export function Receipt({ stats, files, sample, forExport = false, redact = false }: Props) {
   const t = copy.receipt;
-  const folder = stats.folderName || t.untitledFolder;
+  const folder = redact ? redactFolderName() : stats.folderName || t.untitledFolder;
+  const live = !forExport;
   const dupFiles = stats.duplicateGroups.flatMap((g) => g.files.slice(1).filter((f) => !isInstaller(f)));
   const dupCopies = dupFiles.length;
   const n = (count: number, noun: string) => `${formatCount(count)} ${noun}`;
@@ -45,11 +57,13 @@ export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: 
         <Row label={t.labels.totalSize} value={formatBytes(stats.totalBytes)} />
         <Row label={t.labels.notModified} value={formatCount(stats.notModifiedInAYear.length)} />
       </dl>
+      {live && (
       <Expandable
         files={stats.notModifiedInAYear}
         what={t.labels.notModified}
         countText={n(stats.notModifiedInAYear.length, stats.notModifiedInAYear.length === 1 ? 'file' : 'files')}
       />
+      )}
 
       <Divider />
 
@@ -63,11 +77,13 @@ export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: 
         ) : (
           <dl>
             {stats.items.map((f) => (
-              <ItemRow key={f.path} name={f.name} size={f.size} />
+              <ItemRow key={f.path} name={redact ? redactFileName(f.name) : f.name} size={f.size} />
             ))}
           </dl>
         )}
+        {live && (
         <Expandable files={files} what={t.sections.items} countText={n(files.length, files.length === 1 ? 'file' : 'files')} />
+        )}
       </section>
 
       <Divider />
@@ -86,7 +102,9 @@ export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: 
           />
         </dl>
         {stats.installers.length > 0 && <Caption>{t.discountCaptions.installers}</Caption>}
+        {live && (
         <Expandable files={stats.installers} what={t.labels.installers} countText={n(stats.installers.length, stats.installers.length === 1 ? 'installer' : 'installers')} />
+        )}
         <dl className="mt-2">
           <Row
             label={
@@ -98,7 +116,9 @@ export function Receipt({ stats, files, sample }: { stats: ReceiptStats; files: 
           />
         </dl>
         {dupCopies > 0 && <Caption>{t.discountCaptions.duplicates}</Caption>}
+        {live && (
         <Expandable files={dupFiles} what={t.labels.duplicates} countText={n(dupCopies, dupCopies === 1 ? 'copy' : 'copies')} />
+        )}
       </section>
 
       <Divider />

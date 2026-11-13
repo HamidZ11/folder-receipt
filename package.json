@@ -15,6 +15,7 @@
     "check:prod": "! grep -rqE 'dev-data-toggle|Worst case' dist/assets"
   },
   "dependencies": {
+    "modern-screenshot": "^4.7.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

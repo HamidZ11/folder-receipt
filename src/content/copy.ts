@@ -38,6 +38,14 @@ export const copy = {
   receiptSlot: {
     label: 'Receipt',
   },
+  export: {
+    showNames: 'Show file names',
+    tall: 'Save tall PNG',
+    square: 'Save square PNG',
+    saving: 'Saving…',
+    failed: 'Couldn’t save the image.',
+    fileName: (no: string, shape: string) => `folder-receipt-${no}-${shape}.png`,
+  },
   privacy: {
     // Must stay true: enforced by the CSP in csp.ts / vercel.json.
     statement:

@@ -21,9 +21,9 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 
 ## Overnight run (13 Nov, ~30 min budget)
 
-- **Done:** slice 6, expandable sections. See below.
-- **In progress:** fresh-context review (subagent running); Critical/High fixes follow.
-- **Next:** slice 7 export with `modern-screenshot`.
+- **Done:** slice 6 (expandable sections) and slice 7 (PNG export). See below.
+- **In progress:** fresh-context review (subagent running); its findings go under "Review findings" when it returns.
+- **Next:** fix any Critical/High review findings, one commit each.
 
 ### Slice 6 — expandable sections (done)
 - "List n files" under Items (every file), Files not modified in a year, Leftover installers and Duplicates (extra copies).
@@ -31,7 +31,22 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - Hand-rolled fixed-row virtualisation: 32px rows (8 × `--spacing`, read from the token) and a 10-row viewport. Only the visible window plus 4 rows of overscan is in the DOM; e2e checks that 100k files stays under 30 rows, including at the bottom.
 - Motion: `grid-template-rows` 0fr → 1fr over `--duration-expand` with `--ease-out`, and none under reduced motion. Closed lists are `inert`. review-animations: Approve (height animation is the sanctioned case for accordion-style disclosure).
 
+### Slice 7 — export (done)
+- "Save tall PNG" and "Save square PNG" under the receipt, plus a "Show file names" checkbox (off by default, so exports are redacted).
+- Captured from a static clone: a separate React root rendered off-screen, with no print animation and no lists. `modern-screenshot` `domToBlob` at 2× with `font: false` (system fonts, nothing fetched).
+- Sizes: tall 960×1948 and square 1948×1948 (the receipt centred on the page background).
+- Redaction: file names become `▇▇▇▇.ext`, and the folder name becomes `▇▇▇▇`. The URL stays in the footer.
+- **The CSP did not need loosening:** 0 violations in Chromium and WebKit.
+- Tests:
+  - A unit test renders the export receipt to HTML and checks redaction.
+  - The e2e checks the downloads, the PNG dimensions, that ticking "Show file names" changes the image, no CSP violations and a clean console, and that the clone is removed afterwards.
+
 ## Decisions I made (reversible)
+
+- **The folder name is redacted too** when names are hidden, because folder names can be personal. Undo: in `Receipt.tsx`, use `stats.folderName` when `redact` is set.
+- **Square export = the tall receipt centred on a square of page background.** It's not a cropped or reflowed layout. Undo or change: `exportReceipt.tsx`.
+- **Export file name:** `folder-receipt-<receipt no>-<tall|square>.png`.
+- **Redaction is checked by a unit test rather than in the e2e.** Reading the off-screen clone's text from the page came back empty in both engines (the image was correct). The e2e instead checks that redacted and named exports differ.
 
 - **The breakdown bar has no list.** Category lists would repeat the Items table filtered by type. Undo: add an `Expandable` per breakdown segment.
 - **Expand control:** a muted underlined text button under each section ("List 1,210 files" / "Hide list"). These are placeholder visuals from tokens. The copy is new and lives in `copy.ts` under `receipt.expand`.
@@ -39,11 +54,9 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 
 ## Left
 
-2. **Slice 7 — PNG export with redaction.**
-   - Tall and square crops.
-   - Names redacted by default, with a toggle.
-   - URL in the footer.
-   - Ask before adding `modern-screenshot`, and re-check the CSP (export may need `data:`/`blob:` or inline styles).
+2. ~~Slice 7~~ (done in the overnight run). Possible follow-ups:
+   - The square export is very tall-in-square. Hamid may want a reflowed square layout.
+   - Check the export's look on a real phone (download behaviour on iOS Safari).
 3. **Ship-check** (the light, static-site parts of the pack's checklist).
 4. **Deploy to Vercel.** Check it supports `packageManager: pnpm@12.18.0` with a v9 lockfile. It may need `ENABLE_EXPERIMENTAL_COREPACK=1`, and old Corepack can't launch pnpm 12. Confirm the CSP header is served (`curl -I`).
 5. **Hamid's design pass:**

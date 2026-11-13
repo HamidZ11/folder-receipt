@@ -25,7 +25,7 @@ function cspMeta(): Plugin {
 export default defineConfig({
   plugins: [react(), tailwindcss(), cspMeta()],
   test: {
-    include: ['src/**/*.test.ts', 'csp.test.ts'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'csp.test.ts'],
     environment: 'node',
   },
 });

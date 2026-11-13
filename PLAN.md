@@ -187,19 +187,7 @@ Changed 13 Nov: print-while-feeding, no row stagger, no NumberFlow.
 - [x] The expand motion uses `grid-template-rows` with `--duration-expand` and `--ease-out`, and none under reduced motion. Closed lists are `inert`.
 - [x] review-animations: Approve. Checked at 390px (e2e screenshots `screens/slice-6/`).
 
-### 7. Export with redaction (later session)
-- [ ] Tall and square PNG.
-- [ ] Redaction is on by default and toggleable. Names render as `▇▇▇▇▇.mov`, keeping the extension.
-- [ ] The URL is in the footer, and export renders a static, non-animated clone.
-- [ ] CSP is re-checked.
-
----
-
-## Decisions (were open questions)
-
-1. The sample prints once on first load. Later loads in the same session render it static.
-2. Skipped counts go in the scan status line, outside the receipt.
-3. Host: Vercel. Placeholder URL `folder-receipt.vercel.app` in `config.ts`. `vercel.json` carries the CSP plus `frame-ancestors 'none'` as headers, alongside the meta tag.
-4. Duplicates normalise copy suffixes (see the data model).
-5. No auto-scroll during the print.
-6. Discount captions and footer copy: deadpan placeholders marked `TODO(Hamid)` in `copy.ts`.
+### 7. Export with redaction (done in the overnight run, 13 Nov)
+- [x] Tall and square PNG via `modern-screenshot` (approved), from a static, non-animated clone.
+- [x] Names redacted by default (`▇▇▇▇.ext`, folder `▇▇▇▇`), with a "Show file names" toggle. The URL is in the footer.
+- [x] CSP unchanged: 0 violations in Chromium and WebKit.
