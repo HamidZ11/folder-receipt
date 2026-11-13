@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeStats, notModifiedCutoff } from './computeStats.ts';
+import { computeStats, computeStatsSliced, notModifiedCutoff } from './computeStats.ts';
 import { NOW, rec, scan, seeded } from './test-helpers.ts';
 import type { FileRecord } from './types.ts';
 
@@ -31,7 +31,7 @@ describe('computeStats: totals', () => {
   });
 
   it('passes skipped counts through untouched', () => {
-    const skipped = { dsStore: 4, dotfiles: 9, nodeModules: 2, git: 1 };
+    const skipped = { dsStore: 4, dotfiles: 9, nodeModules: 2, git: 1, unreadable: 3 };
     expect(computeStats(scan([], { skipped })).skipped).toEqual(skipped);
   });
 });
@@ -132,6 +132,18 @@ describe('computeStats: receipt number', () => {
     expect(computeStats(scan([rec('a', 1)])).receiptNo).toBe(a);
     expect(computeStats(scan([rec('a', 2)])).receiptNo).not.toBe(a);
     expect(a).toMatch(/^\d{8}$/);
+  });
+});
+
+describe('computeStatsSliced', () => {
+  it('gives the same result as computeStats and pauses between phases', async () => {
+    const sc = scan([rec('a.dmg', 10), rec('a (1).dmg', 10), rec('b.mov', 99, NOW - 900 * DAY)]);
+    let pauses = 0;
+    const sliced = await computeStatsSliced(sc, async () => {
+      pauses++;
+    });
+    expect(sliced).toEqual(computeStats(sc));
+    expect(pauses).toBeGreaterThanOrEqual(3);
   });
 });
 

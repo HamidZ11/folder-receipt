@@ -16,7 +16,11 @@ export function notModifiedCutoff(now: number): number {
 const bySizeDesc = (a: FileRecord, b: FileRecord) =>
   b.size - a.size || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
 
-export function computeStats(scan: ScanResult): ReceiptStats {
+/**
+ * The stats work in phases. Each `yield` is a safe point to give the main
+ * thread back (each phase is ≤ ~15ms at 100k files).
+ */
+function* statsPhases(scan: ScanResult): Generator<void, ReceiptStats, void> {
   const { files, scannedAt } = scan;
   const cutoff = notModifiedCutoff(scannedAt);
 
@@ -28,15 +32,22 @@ export function computeStats(scan: ScanResult): ReceiptStats {
     if (f.lastModified < cutoff) notModified.push(f);
     if (isInstaller(f)) installers.push(f);
   }
-
   const items = topN(files, ITEM_COUNT);
+  yield;
+
+  notModified.sort((a, b) => a.lastModified - b.lastModified);
+  installers.sort(bySizeDesc);
+  yield;
+
   const duplicateGroups = findDuplicates(files);
+  yield;
 
   // Savings: union of installer files and every duplicate copy except the keeper.
   const reclaim = new Set<FileRecord>(installers);
   for (const g of duplicateGroups) for (const f of g.files.slice(1)) reclaim.add(f);
   let totalSavings = 0;
   for (const f of reclaim) totalSavings += f.size;
+  const breakdown = computeBreakdown(files);
 
   return {
     receiptNo: receiptNumber([scan.rootName, files.length, totalBytes, scannedAt]),
@@ -45,14 +56,32 @@ export function computeStats(scan: ScanResult): ReceiptStats {
     totalFiles: files.length,
     totalBytes,
     largest: items[0] ?? null,
-    notModifiedInAYear: notModified.sort((a, b) => a.lastModified - b.lastModified),
+    notModifiedInAYear: notModified,
     items,
-    installers: installers.sort(bySizeDesc),
+    installers,
     duplicateGroups,
     totalSavings,
-    breakdown: computeBreakdown(files),
+    breakdown,
     skipped: { ...scan.skipped },
   };
+}
+
+export function computeStats(scan: ScanResult): ReceiptStats {
+  const it = statsPhases(scan);
+  for (;;) {
+    const r = it.next();
+    if (r.done) return r.value;
+  }
+}
+
+/** Same result as computeStats, but awaits `pause()` between phases so the UI stays responsive. */
+export async function computeStatsSliced(scan: ScanResult, pause: () => Promise<void>): Promise<ReceiptStats> {
+  const it = statsPhases(scan);
+  for (;;) {
+    const r = it.next();
+    if (r.done) return r.value;
+    await pause();
+  }
 }
 
 /** Top n by size without sorting the whole array (100k files). */

@@ -17,12 +17,14 @@ export type FileRecord = {
 export type SkipCounts = {
   /** .DS_Store files. */
   dsStore: number;
-  /** Other hidden files, and files inside hidden folders. */
+  /** Other hidden files, plus hidden folders (each folder counts once, not walked into). */
   dotfiles: number;
   /** node_modules folders (not walked into). */
   nodeModules: number;
   /** .git folders (not walked into). */
   git: number;
+  /** Files or folders the browser refused to read. */
+  unreadable: number;
 };
 
 export type ScanResult = {
@@ -72,4 +74,4 @@ export type ReceiptStats = {
   skipped: SkipCounts;
 };
 
-export const emptySkipCounts = (): SkipCounts => ({ dsStore: 0, dotfiles: 0, nodeModules: 0, git: 0 });
+export const emptySkipCounts = (): SkipCounts => ({ dsStore: 0, dotfiles: 0, nodeModules: 0, git: 0, unreadable: 0 });

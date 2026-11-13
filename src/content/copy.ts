@@ -9,6 +9,29 @@ export const copy = {
   dropZone: {
     title: 'Drop your folder here',
     subtitle: 'Everything stays on your device',
+    button: 'Choose a folder',
+    noFolderAccess: 'Folder scanning needs a computer. This is a sample receipt.',
+  },
+  status: {
+    sample: 'Showing a sample folder.',
+    scanning: (root: string) => `Scanning ${root || 'folder'}…`,
+    filesFound: (n: string) => `${n} files`,
+    scanned: (root: string, n: string) => `${root || 'Folder'}: ${n} files.`,
+    empty: (root: string) => `${root || 'That folder'} has no files.`,
+    skippedLead: 'Skipped',
+    skipped: {
+      dsStore: (n: string) => `${n} .DS_Store`,
+      dotfiles: (n: string) => `${n} hidden`,
+      nodeModules: (n: string) => `${n} node_modules`,
+      git: (n: string) => `${n} .git`,
+      unreadable: (n: string) => `${n} unreadable`,
+    },
+    errors: {
+      notAFolder: 'That’s a file. Drop a folder.',
+      multiple: 'Drop one folder at a time.',
+      unsupported: 'This browser can’t read dropped folders. Use “Choose a folder”.',
+      unreadable: 'The browser couldn’t read that folder.',
+    },
   },
   receiptSlot: {
     label: 'Receipt',
