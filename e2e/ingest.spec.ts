@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 // Chromium: 100k files with a main-thread budget. WebKit: 5k files, functional.
-const SIZE = { chromium: 100_000, webkit: 5_000 } as const;
+const SIZE = { chromium: 100_000, webkit: 5_000, firefox: 20_000 } as const;
 
 test.describe.configure({ mode: 'serial' });
 
@@ -94,8 +94,8 @@ test('scan keeps the main thread free (no screenshots during this run)', async (
   await expect(status).toContainText('Skipped:');
   await expect(status).toContainText('1 node_modules');
   // WebKit's folder picker omits hidden files entirely (.git, .env, .DS_Store),
-  // so there is nothing to count on that path. Chromium lists them.
-  if (browserName === 'chromium') await expect(status).toContainText('1 .DS_Store, 1 hidden, 1 node_modules, 1 .git');
+  // so there is nothing to count on that path. Chromium and Firefox list them.
+  if (browserName !== 'webkit') await expect(status).toContainText('1 .DS_Store, 1 hidden, 1 node_modules, 1 .git');
   else await expect(status).toContainText('1 node_modules, hidden files and .git not visible in Safari.');
   const wall = Date.now() - started;
 
@@ -157,6 +157,34 @@ test('screenshots: mid-scan counter and finished status', async ({ page, browser
     }
     await expect(status).toContainText(doneText(), { timeout: 180_000 });
     await page.screenshot({ path: `screens/slice-3/done-${vp.name}-${browserName}.png` });
+  }
+});
+
+test('a second pick mid-scan replaces the first and is read in full (Medium #2)', async ({ page, browserName }) => {
+  // Measured 14 Nov: clearing input.value empties an already-read FileList in place in Chromium
+  // and WebKit (5 → 0) but not in Firefox (5 → 5). Without the fix Chromium read 92 of 301 files.
+  // In Firefox, Playwright's setInputFiles only resolves after the first scan has finished, so
+  // the second pick can't land mid-scan there; Firefox isn't affected by the bug anyway.
+  test.skip(browserName === 'firefox', 'Firefox FileList is not live; the race cannot be driven from Playwright');
+  test.setTimeout(180_000);
+  // A first folder big enough that every engine is still scanning when the second pick lands.
+  const big = `${dir}-big`;
+  const small = `${dir}-second`;
+  makeTree(big, 60_000);
+  makeTree(small, 300);
+  try {
+    await page.goto('/');
+    const input = page.getByTestId('folder-input');
+    await input.setInputFiles(big);
+    await expect(page.getByTestId('scan-status')).toContainText('Scanning', { timeout: 60_000 });
+    await input.setInputFiles(small);
+    const name = small.split('/').pop();
+    await expect(page.getByTestId('scan-status')).toContainText(`${name}: 301 files.`, { timeout: 60_000 }); // + 1 bundle
+    await page.waitForTimeout(500); // the cancelled scan's cleanup has run by now
+    await expect(page.getByTestId('scan-status')).toContainText(`${name}: 301 files.`);
+  } finally {
+    removeTree(big);
+    removeTree(small);
   }
 });
 

@@ -34,6 +34,7 @@ type Props = {
  */
 export function Device({ receipt, status, landed, dragging, busy, showNames, onShowNames, onPick, onExport }: Props) {
   const input = useRef<HTMLInputElement>(null);
+  const picks = useRef(0);
   const [folderAccess] = useState(canPickFolders);
   useEffect(() => input.current?.setAttribute('webkitdirectory', ''), []);
 
@@ -92,8 +93,14 @@ export function Device({ receipt, status, landed, dragging, busy, showNames, onS
               data-testid="folder-input"
               onChange={(e) => {
                 const el = e.currentTarget;
-                // Clear only after the scan has read the list, so the same folder can be picked again.
-                if (el.files) void onPick(el.files).finally(() => (el.value = ''));
+                if (!el.files) return;
+                // Clear only after the scan has read the list, so the same folder can be picked again,
+                // and only for the latest pick: in Firefox input.files is live, so a cancelled scan
+                // clearing it would empty the newer pick's list mid-scan (HANDOVER Medium #2).
+                const pick = ++picks.current;
+                void onPick(el.files).finally(() => {
+                  if (pick === picks.current) el.value = '';
+                });
               }}
             />
           </>
