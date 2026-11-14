@@ -15,9 +15,6 @@ import { download, exportReceiptPng, type ExportShape } from './lib/export/expor
 // import (and the fixtures) from the production build. Checked by `pnpm check:prod`.
 const DevData =
   import.meta.env.DEV || import.meta.env.VITE_WORST_CASES === '1' ? lazy(() => import('./dev/DevData.tsx')) : null;
-// Dev-only page-environment prototypes (?bg=1–4), same gating.
-const DevEnvironment =
-  import.meta.env.DEV || import.meta.env.VITE_WORST_CASES === '1' ? lazy(() => import('./dev/DevEnvironment.tsx')) : null;
 
 export function App() {
   const { receipt: live, status, onDrop, onPick } = useFolderScan();
@@ -66,14 +63,7 @@ export function App() {
   };
 
   return (
-    <>
-    {DevEnvironment && (
-      <Suspense fallback={null}>
-        <DevEnvironment scanning={scanning} seen={status.phase === 'scanning' ? status.seen : receipt.stats.totalFiles} landed={landed} receipt={receipt} />
-      </Suspense>
-    )}
-    {/* relative z-10: the page sits above any environment layer. */}
-    <main className="relative z-10 mx-auto flex w-full max-w-receipt flex-col px-(--page-gutter) pt-8 pb-16 sm:max-w-wide sm:pt-16">
+    <main className="mx-auto flex w-full max-w-receipt flex-col px-(--page-gutter) pt-8 pb-16 sm:max-w-wide sm:pt-16">
       <Device
         receipt={receipt}
         status={status}
@@ -116,6 +106,5 @@ export function App() {
         </Suspense>
       )}
     </main>
-    </>
   );
 }

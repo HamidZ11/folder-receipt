@@ -44,9 +44,6 @@ export const copy = {
       unreadable: 'The browser couldn’t read that folder.',
     },
   },
-  environment: {
-    wordmark: 'FOLDER RECEIPT',
-  },
   receiptSlot: {
     label: 'Receipt',
   },

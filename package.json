@@ -12,7 +12,7 @@
     "test": "vitest run",
     "screens": "playwright test",
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm check:prod && pnpm screens",
-    "check:prod": "! grep -rqE 'dev-data-toggle|Worst case|proto-picker|dev-env-toggle' dist/assets"
+    "check:prod": "! grep -rqE 'dev-data-toggle|Worst case|proto-picker' dist/assets"
   },
   "dependencies": {
     "@fontsource/manrope": "^5.3.0",
