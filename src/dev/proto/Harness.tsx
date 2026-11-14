@@ -1,13 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentType } from 'react';
+import '../../styles/themes/object.css';
 import '../../styles/themes/thermal.css';
 import './fonts.ts';
 import './picker.css';
+import { ObjectPage } from './ObjectPage.tsx';
 import { protoCopy } from './protoCopy.ts';
 import { ThermalPage } from './ThermalPage.tsx';
 import { PHASES, type Phase } from './useProtoFlow.ts';
 
 const LETTERS = ['A', 'B', 'C'] as const;
-const PAGES: ComponentType<{ fixed: Phase | null }>[] = [ThermalPage];
+const PAGES: ComponentType<{ fixed: Phase | null }>[] = [ThermalPage, ObjectPage];
 
 const params = () => new URLSearchParams(location.search);
 const initialIndex = () =>
