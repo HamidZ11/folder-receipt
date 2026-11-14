@@ -154,6 +154,23 @@
 
   /* Press feedback */
   --press-scale: 0.97;
+
+  /* Page environment prototypes (dev-only switcher ?bg=1–4; not in production yet) */
+  --env-dot: rgb(255 255 255 / 0.07); /* 1 · dot-matrix field */
+  --env-dot-lit: rgb(255 255 255 / 0.2); /* the band that moves with the counter */
+  --env-dot-cell: 6; /* px between dots */
+  --env-surface: #141311; /* 3 · counter surface */
+  --env-pool: rgb(255 240 220 / 0.09); /* the light pool under the device */
+  --env-contact-shadow: rgb(0 0 0 / 0.75); /* where the hanging paper meets the surface */
+  --env-wordmark: rgb(255 255 255 / 0.045); /* 4 · giant wordmark */
+  --env-wordmark-size: 17vw;
+  --env-spike: #4a4641; /* 2 · receipt spike: the rod */
+  --env-spike-base: #24221f;
+  --env-spike-tilt: 7; /* max ± degrees */
+  --env-spike-zigzag: 4px; /* smaller teeth on the mini receipts */
+  --env-spike-gap: 56px; /* between the spike and the device column */
+  --env-pool-width: min(1100px, 200vw);
+  --env-pool-height: 720px;
 }
 
 /*

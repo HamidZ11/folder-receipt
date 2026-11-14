@@ -54,3 +54,15 @@
 .torn-edge [data-receipt] {
   padding-block: calc(1.5rem + var(--zigzag));
 }
+
+/* Mini receipts on the dev environment spike: the same torn bottom edge, smaller teeth. */
+.spike-paper {
+  --zigzag: var(--env-spike-zigzag);
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+  filter: var(--paper-shadow);
+}

@@ -19,6 +19,20 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - once per session;
 - a drop mid-print.
 
+## Page environment prototypes (14 Nov, awaiting Hamid's pick)
+
+Dev-only switcher at the top of the page in `pnpm dev`: **Plain · 1 Dots · 2 Spike · 3 Surface · 4 Wordmark**, or `?bg=1–4`. It's gated like the worst-case toggle, and `check:prod` greps for `dev-env-toggle`, so production is still plain. The device and receipt are untouched. Every value is a token (`--env-*` in `tokens.css`), and the only new string is `copy.environment.wordmark`. Exports are unaffected: they render only the thermal paper in their own off-screen root, and the export frame keeps its own background.
+
+| # | Option | How | Motion and reduced motion |
+|---|---|---|---|
+| 1 | Dot-matrix field | A canvas drawn once with 4×4 Bayer ordered dithering; light falls off from the top centre. | During a scan, a lit band steps down the page once per counter update (a redraw only on counter steps, ≈3–5ms, never a timer). The band clears when the paper lands. Reduced motion: static (e2e checks it doesn't change during a scan). |
+| 2 | Receipt spike | Each receipt that lands this session is pinned on a spike left of the device, with an angle seeded from its receipt number, newest on top. In memory only. | No animation. **Hidden below 1024px**: there's no room beside the device on a phone. |
+| 3 | Counter surface | A dark surface (painted on the page background while on), a soft light pool under the device, and a contact shadow at the paper's measured bottom edge. | Static. |
+| 4 | Giant wordmark | "FOLDER RECEIPT" in Space Mono at 17vw, 4.5% white, fixed behind everything. | Static. |
+
+**Lighthouse, mobile** (e2e build, which includes the switcher): plain 98/100, Dots 98/100, Spike 98/100, Surface 98/100, Wordmark 98/100 (performance/accessibility). LCP 2.1–2.2s, CLS 0 for all.
+**Screenshots:** `screens/bg/{1-dots,2-spike,3-surface,4-wordmark}-{idle,done}-{1280,390}.png`. "Done" means two prints this session.
+
 ## Ship-check (static-site parts, 14 Nov)
 
 | Item | Result | Evidence |
