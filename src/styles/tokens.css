@@ -1,7 +1,8 @@
 /*
  * Folder Receipt — design tokens.
  * THE ONLY FILE WITH VISUAL VALUES. Direction D (14 Nov 2026): B's device,
- * A's thermal paper, C's colours. Restyle the app by editing this file.
+ * A's thermal paper. Light mode (14 Nov 2026): a dark device and bright paper
+ * on a warm cream page. Restyle the app by editing this file.
  *
  * Tailwind v4 reads @theme and generates utilities from it
  * (e.g. --color-paper -> bg-paper / text-paper, --radius-card -> rounded-card).
@@ -21,20 +22,20 @@
   --ease-*: initial;
   --animate-*: initial;
 
-  /* ---- Colour: page ---- */
-  --color-page: #0d0d0c;
-  --color-surface: #0d0d0c;
-  --color-surface-line: rgb(255 255 255 / 0.14);
-  --color-surface-line-active: rgb(255 255 255 / 0.45);
-  --color-text: #f3f1ec;
-  --color-text-muted: #8f8c85;
+  /* ---- Colour: page (warm cream). Text pairs meet WCAG AA on it. ---- */
+  --color-page: #f0e9dd;
+  --color-surface: #f0e9dd;
+  --color-surface-line: rgb(36 33 29 / 0.14);
+  --color-surface-line-active: rgb(36 33 29 / 0.45);
+  --color-text: #24211d; /* 13.3:1 on the page */
+  --color-text-muted: #6b6257; /* 4.96:1 on the page */
 
-  /* ---- Colour: the device box (dark). Light alternative at the end of this file. ---- */
-  --color-box: #0d0d0c;
+  /* ---- Colour: the device box (a warm near-black panel on the cream page) ---- */
+  --color-box: #24211d;
   --color-box-line: rgb(255 255 255 / 0.14);
   --color-box-line-active: rgb(255 255 255 / 0.45);
   --color-box-text: #f3f1ec;
-  --color-box-muted: #8f8c85;
+  --color-box-muted: #8f8c85; /* 4.78:1 on the box */
   --color-button: #f3f1ec;
   --color-button-text: #0d0d0c;
   --color-chip-line: rgb(255 255 255 / 0.2);
@@ -42,7 +43,7 @@
   --color-slot-highlight: rgb(255 255 255 / 0.12); /* light catching the lip's lower edge */
 
   /* ---- Colour: thermal paper ---- */
-  --color-paper: #f7f3ec;
+  --color-paper: #fbfaf7; /* brighter than the page so the paper reads as an object on it */
   --color-ink: #2b2521; /* slightly warm black */
   --color-ink-muted: #6f665e;
   --color-hairline: rgb(43 37 33 / 0.6);
@@ -58,7 +59,7 @@
 
   /* ---- Colour: status ---- */
   --color-danger: #e5484d;
-  --color-focus: #8aa4ff;
+  --color-focus: #3e68ff; /* ≥ 3:1 on the page (3.76), the box (3.53) and the paper (4.35) */
 
   /* ---- Colour: dev-only break-ui toggle (never in production) ---- */
   --color-dev-track: #2a2a2a;
@@ -114,6 +115,9 @@
 
 /* Values Tailwind has no theme namespace for. Still tokens; still only here. */
 :root {
+  /* Light page: native controls and scrollbars follow it. */
+  color-scheme: light;
+
   /* Hairline thickness */
   --hairline-width: 1px;
 
@@ -126,7 +130,8 @@
   --label-tracking: 0.14em; /* tiny uppercase labels */
 
   /* Paper */
-  --paper-shadow: drop-shadow(0 10px 18px rgb(0 0 0 / 0.55));
+  /* A tight contact shadow plus a soft ambient one, warm-tinted for the cream page. */
+  --paper-shadow: drop-shadow(0 1px 1.5px rgb(60 44 26 / 0.18)) drop-shadow(0 4px 10px rgb(60 44 26 / 0.14)); /* stays inside --print-slot-bleed */
   --zigzag: 7px; /* torn-edge tooth height */
   --rule-width: 2px; /* dotted rules */
   /* Receipt mono size follows the paper's width so no label wraps:
@@ -155,18 +160,3 @@
   /* Press feedback */
   --press-scale: 0.97;
 }
-
-/*
- * Light box alternative (B's off-white), not in use. To switch, replace the
- * box values in @theme above with these:
- *   --color-box: #f5f4f1;
- *   --color-box-line: rgb(22 22 21 / 0.12);
- *   --color-box-line-active: rgb(22 22 21 / 0.4);
- *   --color-box-text: #161615;
- *   --color-box-muted: #66655f;
- *   --color-button: #161615;
- *   --color-button-text: #f5f4f1;
- *   --color-chip-line: rgb(22 22 21 / 0.2);
- *   --color-slot: #161615;
- *   --shadow-device: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 18px 40px -24px rgb(0 0 0 / 0.6);
- */

@@ -40,7 +40,7 @@ for (const vp of widths) {
 
     // Tokens applied (page background comes from tokens.css).
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    expect(bg).toBe('rgb(13, 13, 12)');
+    expect(bg).toBe('rgb(240, 233, 221)');
 
     // No horizontal overflow at any width.
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

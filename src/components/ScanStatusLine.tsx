@@ -22,7 +22,7 @@ function Message({ status, receipt }: { status: ScanStatus; receipt: Receipt }) 
     return (
       <>
         {copy.status.scanning(status.rootName)}{' '}
-        <span className="num text-text">{copy.status.filesFound(status.seen, formatCount(status.seen))}</span>
+        <span className="num text-(--color-box-text)">{copy.status.filesFound(status.seen, formatCount(status.seen))}</span>
       </>
     );
   }

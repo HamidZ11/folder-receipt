@@ -38,10 +38,21 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 | Analytics, error tracking, privacy policy | N/A | Nothing is collected. |
 | Real phone | ✗ not done | Needs Hamid: tear on touch, folder picker hidden on phones, iOS export download. |
 
+## Light mode (branch `design`, 14 Nov)
+
+Palette reference: rime.ai (palette and dark-panel-on-cream only). Tokens only; layout, fonts, accent and motion unchanged.
+- **Page** `#f0e9dd` cream. **Device** `#24211d` warm near-black panel. **Paper** `#fbfaf7`, ink unchanged.
+- **Paper shadow:** a tight contact shadow plus a soft ambient one, warm-tinted, sized to stay inside `--print-slot-bleed` (16px) so the slot never clips it.
+- **Contrast on cream:** page text 13.3:1, muted text (tear hint, footer) 4.96:1. Focus `#3e68ff` is ≥ 3:1 on the page (3.76), the device (3.53) and the paper (4.35). The dev toggle sits on its own dark track (5.7:1).
+- **Export** frames the paper on the page colour; e2e reads the PNG's corner pixel back and compares it with the page background.
+- `color-scheme: light` moved into `tokens.css`. `public/og.png` and `e2e/og.spec.ts` still use the old dark page and haven't been regenerated.
+- The `?bg` environment prototypes were rejected and removed (6d9d6a5).
+- Screenshots: `screens/light/` (idle, scanning, mid-print, done, torn export at 1280 and 390).
+
 ## D is the real page (branch `design`, 14 Nov)
 
 The prototype switcher, A/B/C and their theme files have been removed. D's values now live in `tokens.css`; `receipt.css` holds the paper structure (token-only).
-- **Box: dark.** Hamid's reply left the dark/light choice blank, so I chose dark (the case he gave instructions for). It has a slot lip: a dark seam drawn over the paper's top edge, so the paper emerges from under it. The light box values are in a comment at the end of `tokens.css` and swap in with one edit.
+- **Box: dark only.** It has a slot lip: a dark seam drawn over the paper's top edge, so the paper emerges from under it. The light box alternative was removed in light mode (below).
 - **Desktop:** the column widens to 30rem from the `sm` breakpoint. The receipt mono reaches 15px. The 390px behaviour and the no-wrap e2e are unchanged.
 - **Legend:** an even grid with the percentage under each name. 6 entries make 3+3; 4 make 2+2. e2e checks two rows of three.
 - **Privacy line:** inside the device, under the subtitle. Nothing sits below the paper.

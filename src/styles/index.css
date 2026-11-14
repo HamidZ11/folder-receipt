@@ -5,7 +5,6 @@
 /* Base styles only. No visual values here — they come from tokens.css. */
 @layer base {
   :root {
-    color-scheme: dark;
     -webkit-text-size-adjust: 100%;
   }
 

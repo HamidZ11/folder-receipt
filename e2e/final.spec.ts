@@ -2,12 +2,12 @@ import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { makeTree, removeTree } from './tree.ts';
 
-// The real page (direction D). Chromium: screenshots, layout, gesture, export. WebKit: end state.
+// The real page (direction D, light mode). Chromium: screenshots, layout, gesture, export. WebKit: end state.
 const WIDTHS = [
   { name: '1280', width: 1280, height: 900 },
   { name: '390', width: 390, height: 844 },
 ] as const;
-const OUT = 'screens/final';
+const OUT = 'screens/light';
 const DIR = '/tmp/fr-e2e-final';
 
 test.describe.configure({ mode: 'serial' });
@@ -137,6 +137,21 @@ for (const vp of WIDTHS) {
     ]);
     await dl.saveAs(`${OUT}/torn-export-${vp.name}.png`);
     expect(readFileSync(`${OUT}/torn-export-${vp.name}.png`).subarray(1, 4).toString()).toBe('PNG');
+    // The export sits on the cream page colour: read its corner pixel back through a canvas.
+    const exportPng = `data:image/png;base64,${readFileSync(`${OUT}/torn-export-${vp.name}.png`).toString('base64')}`;
+    const corner = await page.evaluate(async (src) => {
+      const img = new Image();
+      img.src = src;
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      const ctx = c.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      return [...ctx.getImageData(2, 2, 1, 1).data.slice(0, 3)];
+    }, exportPng);
+    const pageBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(`rgb(${corner.join(', ')})`).toBe(pageBg);
     expect(fonts.some((u) => u.includes('space-mono'))).toBe(true);
     await expect(page.locator('.torn-edge')).toHaveAttribute('data-torn-top', '');
     expect(errors, 'no CSP violations or errors').toEqual([]);
