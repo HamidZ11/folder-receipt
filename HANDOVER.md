@@ -19,6 +19,40 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - once per session;
 - a drop mid-print.
 
+## Design phase (branch `design`, 14 Nov)
+
+Three directions behind a dev-only switcher. Run `pnpm dev`, then open `http://localhost:5173/?proto=A` (or `B`, `C`). Production never ships it: the same gate as the worst-case toggle applies, and `check:prod` also greps for `proto-picker`.
+- **Keys:** 1–3 or ←/→ switch direction; R replays the scan and print; F swaps the font pairing (`?font=1|2`).
+- **Fixed moments for screenshots:** `?state=idle|scanning|printing|done`.
+
+| Dir | Pairing 1 / 2 (sans + mono) | Slot and feed | Tear |
+|---|---|---|---|
+| A Thermal | Space Grotesk + Space Mono / IBM Plex Sans + IBM Plex Mono | slot under the printer, paper feeds down (footer first) | yes |
+| B Object | Manrope + JetBrains Mono / DM Sans + DM Mono | slot under the device, feeds down | yes |
+| C Editorial | Geist Sans + Geist Mono / Hanken Grotesk + Martian Mono | slot below the card, rises (header first, as now) | no (button only) |
+
+- **Theme files:** `src/styles/themes/{thermal,object,editorial}.css`, scoped to `:root[data-proto]`. To adopt one, `@import` it in `tokens.css` and drop the scoping.
+- **Fonts:** `@fontsource`, latin subset, self-hosted woff2. Vite is set never to inline fonts as `data:`, so the CSP is unchanged.
+- **Tear-to-export (A, B):**
+  - The paper tracks the pointer 1:1, rubber-banded towards the slot.
+  - It tears at more than 120px or on a flick faster than 0.6px/ms.
+  - Otherwise it snaps back on a velocity-seeded spring (a CSS `linear()` curve generated from a damped spring).
+  - On touch, only the grip strip under the paper starts a tear, so the receipt still scrolls.
+  - A tear exports a redacted tall PNG, then a fresh receipt prints.
+- **Screenshots:** `screens/design/{A,B,C}-{idle,midprint,done,done-font2}-{1280,390}.png`, plus `{A,B}-torn-export.png`.
+
+### Design-phase decisions (reversible)
+- **A and B feed down, footer first.** A device on top with paper hanging below can't be header-first with upright text. C keeps the header-first rise.
+- **The picker uses `?proto=A|B|C`** as asked, not the picker spec's `?v=`. Font switching is a key (F), not a picker button, to keep the picker verbatim.
+- **The tear always exports a redacted tall PNG.** The "Show file names" box only applies to the buttons.
+- **Proto-only strings** ("Ready", "Input", "Pull to tear off and save"…) live in `src/dev/proto/protoCopy.ts`, because `copy.ts` is frozen. They move into `copy.ts` on promotion.
+
+### Design-phase open questions
+- **Web fonts don't make it into exported PNGs.** modern-screenshot embeds fonts by injecting an inline `<style>`, which `style-src 'self'` blocks. Prototype exports therefore fall back to system fonts. Options:
+  - accept it;
+  - allow one hashed or nonced style (a CSP change, your call);
+  - render the export text another way.
+
 ## Overnight run (13 Nov, ~30 min budget)
 
 - **Done:** slice 6 (expandable sections) and slice 7 (PNG export). See below.

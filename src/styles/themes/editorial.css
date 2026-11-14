@@ -19,7 +19,7 @@
   --color-segment-5: #c8c4bc;
   --color-segment-6: #dedad2;
   --radius-card: 10px;
-  --shadow-paper: 0 1px 0 rgb(0 0 0 / 0.3), 0 30px 60px -30px rgb(0 0 0 / 0.9);
+  --shadow-paper: 0 1px 0 rgb(0 0 0 / 0.3), 0 12px 20px -12px rgb(0 0 0 / 0.8); /* fits inside the 16px slot bleed */
   --text-total: 2.75rem;
   --text-total--line-height: 1;
   --text-total--letter-spacing: -0.035em;

@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 // Design prototypes (dev-only harness, present in the e2e build). Chromium only: screenshots + gesture.
 test.skip(({ browserName }) => browserName !== 'chromium', 'design screenshots run in Chromium');
 
-const DIRECTIONS = (process.env.PROTO_DIRECTIONS ?? 'A,B').split(',');
+const DIRECTIONS = (process.env.PROTO_DIRECTIONS ?? 'A,B,C').split(',');
 const WIDTHS = [
   { name: '1280', width: 1280, height: 900 },
   { name: '390', width: 390, height: 844 },
