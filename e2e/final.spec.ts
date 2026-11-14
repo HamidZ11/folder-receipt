@@ -69,12 +69,14 @@ for (const vp of WIDTHS) {
     await expect(page.getByTestId('export-controls')).toHaveAttribute('data-shown', '');
     expect(await wrappedLabels(page), 'no receipt label wraps').toEqual([]);
     expect(await legendRows(page), 'legend: two even rows of three').toEqual([3, 3]);
-    // Nothing below the paper: the reserved print space is empty page.
+    // Below the paper there is only the page footer (the full privacy sentence).
     const below = await page.evaluate(() => {
       const paperBottom = document.querySelector('[data-testid="slot"]')!.getBoundingClientRect().bottom;
-      return [...document.querySelectorAll('main > *')].filter((el) => el.getBoundingClientRect().top > paperBottom).length;
+      return [...document.querySelectorAll('main > *')].filter((el) => el.getBoundingClientRect().top > paperBottom).map((el) => el.tagName);
     });
-    expect(below).toBe(0);
+    expect(below).toEqual(['FOOTER']);
+    await expect(page.locator('main > footer')).toContainText('never uploaded');
+    await expect(page.getByTestId('device')).toContainText('Nothing leaves your browser.');
     await page.screenshot({ path: `${OUT}/idle-${vp.name}.png`, fullPage: true });
 
     // NAMES: a clear on/off light, aria-pressed in step.
@@ -104,6 +106,20 @@ for (const vp of WIDTHS) {
     await expect(page.getByTestId('device-status')).toContainText('Printed');
     await expect.poll(() => page.getByTestId('export-controls').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
     expect(await wrappedLabels(page)).toEqual([]);
+    // No orphan in the skipped line: its last line holds at least two items.
+    const skipLines = await page.locator('[data-skip-item]').evaluateAll((items) => {
+      const rows = new Map<number, number>();
+      for (const el of items) {
+        const top = Math.round(el.getBoundingClientRect().top);
+        rows.set(top, (rows.get(top) ?? 0) + 1);
+      }
+      return [...rows.entries()].sort((a, b) => a[0] - b[0]).map(([, n]) => n);
+    });
+    expect(skipLines.length, 'skipped items present').toBeGreaterThan(0);
+    if (skipLines.length > 1) expect(skipLines.at(-1)!, `no orphan in the skipped line ${JSON.stringify(skipLines)}`).toBeGreaterThanOrEqual(2);
+    // A zero discount has no row: this folder has no duplicates.
+    await expect(page.getByRole('article')).not.toContainText('Duplicates');
+    await expect(page.getByRole('article')).toContainText('Leftover installers');
     await page.screenshot({ path: `${OUT}/done-${vp.name}.png`, fullPage: true });
 
     // Torn export: pull from the grip; Space Mono goes into the PNG without a CSP violation.

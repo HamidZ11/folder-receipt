@@ -97,6 +97,9 @@ export function App() {
         </div>
       </section>
 
+      {/* The page's only footer text, below everything. */}
+      <footer className="mt-10 px-1 text-label text-text-muted">{copy.privacy.statement}</footer>
+
       {DevData && (
         <Suspense fallback={null}>
           <DevData onChange={setDevReceipt} />

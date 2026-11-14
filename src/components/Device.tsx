@@ -68,7 +68,7 @@ export function Device({ receipt, status, landed, dragging, busy, showNames, onS
         {copy.dropZone.title}
       </h1>
       <p className="text-small text-(--color-box-muted)">{copy.dropZone.subtitle}</p>
-      <p className="mt-2 text-label text-(--color-box-muted)">{copy.privacy.statement}</p>
+      <p className="mt-2 text-label text-(--color-box-muted)">{copy.privacy.short}</p>
 
       <div className="mt-6 flex items-end justify-between gap-4">
         <div data-testid="display" className="min-w-0">
@@ -101,7 +101,7 @@ export function Device({ receipt, status, landed, dragging, busy, showNames, onS
       </div>
       {!folderAccess && <p className="mt-3 text-small text-(--color-box-muted)">{copy.dropZone.noFolderAccess}</p>}
 
-      <ScanStatusLine status={status} receipt={receipt} className="mt-3 min-h-10 text-label text-pretty text-(--color-box-muted)" />
+      <ScanStatusLine status={status} receipt={receipt} className="mt-3 min-h-10 text-label text-balance text-(--color-box-muted)" />
 
       {/* Export controls: hidden while printing (no transition), fade in once the paper has landed. */}
       <div

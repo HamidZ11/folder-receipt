@@ -36,7 +36,6 @@ function Message({ status, receipt }: { status: ScanStatus; receipt: Receipt }) 
     copy.status.skipped[k](formatCount(scan.skipped[k])),
   );
   if (SAFARI) parts.push(copy.status.notVisibleInSafari);
-  const skipped = parts.join(', ');
   return (
     <>
       <span className="num">
@@ -44,11 +43,21 @@ function Message({ status, receipt }: { status: ScanStatus; receipt: Receipt }) 
           ? copy.status.empty(scan.rootName)
           : copy.status.scanned(scan.rootName, stats.totalFiles, formatCount(stats.totalFiles))}
       </span>
-      {skipped && (
+      {parts.length > 0 && (
         <>
-          <br />
-          <span className="num">
-            {copy.status.skippedLead}: {skipped}.
+          {/* Its own balanced block, and each item is unbreakable ("1 .git" never splits): no orphans. */}
+          <span className="num block text-balance">
+            {copy.status.skippedLead}:{' '}
+            {parts.map((p, i) => (
+              <span key={p}>
+                {/* Short counts ("1 .git") never split; the longer Safari note may wrap. */}
+                <span data-skip-item className={p === copy.status.notVisibleInSafari ? '' : 'whitespace-nowrap'}>
+                  {p}
+                  {i < parts.length - 1 ? ',' : '.'}
+                </span>
+                {i < parts.length - 1 ? ' ' : ''}
+              </span>
+            ))}
           </span>
         </>
       )}

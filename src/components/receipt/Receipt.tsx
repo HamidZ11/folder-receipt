@@ -92,40 +92,54 @@ export function Receipt({ stats, files, sample, forExport = false, redact = fals
 
       <Divider />
 
-      {/* Discounts */}
-      <section>
-        <SectionLabel>{t.sections.discounts}</SectionLabel>
-        <dl>
-          <Row
-            label={
+      {/* Discounts: a row only when its value isn't zero; no section at all when both are. */}
+      {(stats.installerBytes > 0 || stats.duplicateBytes > 0) && (
+        <>
+          <section>
+            <SectionLabel>{t.sections.discounts}</SectionLabel>
+            {stats.installerBytes > 0 && (
               <>
-                {t.labels.installers} <span className="num">({formatCount(stats.installers.length)})</span>
+                <dl>
+                  <Row
+                    label={
+                      <>
+                        {t.labels.installers} <span className="num">({formatCount(stats.installers.length)})</span>
+                      </>
+                    }
+                    value={minus(stats.installerBytes)}
+                  />
+                </dl>
+                <Caption>{t.discountCaptions.installers}</Caption>
+                {live && (
+                  <Expandable
+                    files={stats.installers}
+                    what={t.labels.installers}
+                    countText={n(stats.installers.length, stats.installers.length === 1 ? 'installer' : 'installers')}
+                  />
+                )}
               </>
-            }
-            value={minus(stats.installerBytes)}
-          />
-        </dl>
-        {stats.installers.length > 0 && <Caption>{t.discountCaptions.installers}</Caption>}
-        {live && (
-        <Expandable files={stats.installers} what={t.labels.installers} countText={n(stats.installers.length, stats.installers.length === 1 ? 'installer' : 'installers')} />
-        )}
-        <dl className="mt-2">
-          <Row
-            label={
+            )}
+            {stats.duplicateBytes > 0 && (
               <>
-                {t.labels.duplicates} <span className="num">({formatCount(dupCopies)})</span>
+                <dl className={stats.installerBytes > 0 ? 'mt-2' : ''}>
+                  <Row
+                    label={
+                      <>
+                        {t.labels.duplicates} <span className="num">({formatCount(dupCopies)})</span>
+                      </>
+                    }
+                    value={minus(stats.duplicateBytes)}
+                  />
+                </dl>
+                <Caption>{t.discountCaptions.duplicates}</Caption>
+                {live && <Expandable files={dupFiles} what={t.labels.duplicates} countText={n(dupCopies, dupCopies === 1 ? 'copy' : 'copies')} />}
               </>
-            }
-            value={minus(stats.duplicateBytes)}
-          />
-        </dl>
-        {dupCopies > 0 && <Caption>{t.discountCaptions.duplicates}</Caption>}
-        {live && (
-        <Expandable files={dupFiles} what={t.labels.duplicates} countText={n(dupCopies, dupCopies === 1 ? 'copy' : 'copies')} />
-        )}
-      </section>
+            )}
+          </section>
 
-      <Divider />
+          <Divider />
+        </>
+      )}
 
       <dl>
         <Row

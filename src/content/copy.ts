@@ -59,7 +59,8 @@ export const copy = {
     fileName: (no: string, shape: string) => `folder-receipt-${no}-${shape}.png`,
   },
   privacy: {
-    // Must stay true: enforced by the CSP in csp.ts / vercel.json.
+    // Both must stay true: enforced by the CSP in csp.ts / vercel.json.
+    short: 'Nothing leaves your browser.',
     statement:
       'Your files are read in your browser and never uploaded. This page’s security policy blocks connections to any other site.',
   },
