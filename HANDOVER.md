@@ -41,6 +41,25 @@ Three directions behind a dev-only switcher. Run `pnpm dev`, then open `http://l
   - A tear exports a redacted tall PNG, then a fresh receipt prints.
 - **Screenshots:** `screens/design/{A,B,C}-{idle,midprint,done,done-font2}-{1280,390}.png`, plus `{A,B}-torn-export.png`.
 
+### D · Combined (art direction, 14 Nov): `?proto=D`
+- **Paper:** A's thermal (Space Mono, dotted rules, zigzag edge, barcode, warm ink), feeding down out of the device's slot, footer first.
+- **Device:** B's structure.
+  - Labels: INPUT, FILES and STATUS. STATUS has a job: its word (Ready, Scanning, Printing, Printed) plus a blue light. OUTPUT was dropped.
+  - A large Space Mono counter, and Choose-a-folder inside the box.
+  - TALL, SQUARE and a NAMES toggle (`aria-pressed`, off = redacted) on the device. The row under the receipt is gone.
+- **Colour:** C's dark page and button, with C's blue for the breakdown bar and legend. No orange and no amber.
+- **Box colour:** key B, or `?box=dark|light`. Dark is C's surface; light is B's off-white with the button inverted.
+- **Fonts:** exactly two families. Manrope (page and box) and Space Mono (receipt and counter), self-hosted.
+- **No label wraps:** the receipt's mono size follows the paper's width (`--receipt-font`, container query, 11–14px). Captions and links scale with it. Checked by e2e at 1280px and 390px, and it holds on the worst-case fixture too.
+- **Controls and the tear hint** are hidden (inert, no transition) during the print, then fade in (`--duration-fade`, ease-out) once the paper lands.
+- **After a tear the top edge is zigzag too:** it appears the instant it rips, stays on later receipts (the roll was torn), and is in the export.
+- **Export fonts, CSP unchanged.** modern-screenshot's default path puts an inline `<style>` into a scratch document that inherits the page's CSP. Passing `font: { cssText }` skips that path. `src/lib/export/fontFaceCss.ts` fetches our own woff2 (`connect-src 'self'`) into `data:` URLs inside `@font-face` rules, which are written straight into the SVG image. The e2e checks the font fetch and zero CSP violations, and the exported PNG visibly uses Space Mono. **This resolves the earlier open question.**
+- **New strings** are in `copy.ts` (`device.*` and `export.*Short`). A/B/C still use `protoCopy.ts`.
+- **review-animations:** one finding. Under reduced motion, a short pull jumped back with no settle; it now gets a 150ms settle. Verdict: Approve.
+- **break-ui:** `?proto=D&data=worst` holds at 1280px and 390px. Nothing goes past the paper edge, no label wraps, there's no sideways scroll, and no NaN.
+- **Screenshots:** `screens/design-d/` holds `{idle,done}-{dark,light}`, `scanning`, `midprint`, `torn-export` and `worst-done`, each at 1280px and 390px.
+- **Left for polish:** the footer line "…Your files / did." wraps with one orphan word (TODO(Hamid) copy). Mid-print leaves the paper's full height reserved below it.
+
 ### Design-phase decisions (reversible)
 - **A and B feed down, footer first.** A device on top with paper hanging below can't be header-first with upright text. C keeps the header-first rise.
 - **The picker uses `?proto=A|B|C`** as asked, not the picker spec's `?v=`. Font switching is a key (F), not a picker button, to keep the picker verbatim.
@@ -48,10 +67,7 @@ Three directions behind a dev-only switcher. Run `pnpm dev`, then open `http://l
 - **Proto-only strings** ("Ready", "Input", "Pull to tear off and save"…) live in `src/dev/proto/protoCopy.ts`, because `copy.ts` is frozen. They move into `copy.ts` on promotion.
 
 ### Design-phase open questions
-- **Web fonts don't make it into exported PNGs.** modern-screenshot embeds fonts by injecting an inline `<style>`, which `style-src 'self'` blocks. Prototype exports therefore fall back to system fonts. Options:
-  - accept it;
-  - allow one hashed or nonced style (a CSP change, your call);
-  - render the export text another way.
+- **Resolved in D:** web fonts in exports now go into the SVG without any CSP change (see D). A/B/C exports still use system fonts; they're kept for reference only.
 
 ## Overnight run (13 Nov, ~30 min budget)
 

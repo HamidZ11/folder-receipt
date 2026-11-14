@@ -19,7 +19,7 @@ function ExportFrame({ receipt, redact }: { receipt: ReceiptData; redact: boolea
 }
 
 export function exportReceiptPng(receipt: ReceiptData, shape: ExportShape, redact: boolean): Promise<Blob> {
-  return exportNodePng(<ExportFrame receipt={receipt} redact={redact} />, shape, { embedFonts: false });
+  return exportNodePng(<ExportFrame receipt={receipt} redact={redact} />, shape);
 }
 
 /** Wraps any receipt node in the export frame (page background, padding, fixed width). */
@@ -33,9 +33,9 @@ export function ExportFrameShell({ children }: { children: ReactNode }) {
 
 /**
  * Render `node` (an export frame) off-screen in its own React root and capture it.
- * embedFonts: inline the page's web fonts (same-origin woff2) into the image; system fonts need none.
+ * fontCss: @font-face rules with data: URLs (see fontFaceCss.ts) for web fonts; omit for system fonts.
  */
-export async function exportNodePng(node: ReactNode, shape: ExportShape, { embedFonts }: { embedFonts: boolean }): Promise<Blob> {
+export async function exportNodePng(node: ReactNode, shape: ExportShape, { fontCss }: { fontCss?: string } = {}): Promise<Blob> {
   const host = document.createElement('div');
   host.setAttribute('aria-hidden', 'true');
   host.dataset.exportHost = '';
@@ -53,7 +53,8 @@ export async function exportNodePng(node: ReactNode, shape: ExportShape, { embed
       scale: 2,
       type: 'image/png',
       backgroundColor: getComputedStyle(frame).backgroundColor,
-      ...(embedFonts ? {} : { font: false as const }), // system fonts: nothing to fetch or embed
+      // cssText path: fonts go into the SVG, never into a CSP-bound <style> (fontFaceCss.ts).
+      font: fontCss ? { cssText: fontCss } : false,
     });
   } finally {
     root.unmount();

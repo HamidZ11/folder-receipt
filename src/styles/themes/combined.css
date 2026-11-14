@@ -1,0 +1,111 @@
+/* D · Combined (art direction, 14 Nov). Overrides tokens.css while :root[data-proto="D"].
+   Paper: A's thermal. Device: B's structure. Colour: C's page, button and blue accent.
+   Fonts: Manrope (page, box) + Space Mono (receipt, counter). Box: dark (C surface) or light (B off-white). */
+:root[data-proto='D'] {
+  color-scheme: dark;
+  /* Page (C) */
+  --color-page: #0d0d0c;
+  --color-text: #f3f1ec;
+  --color-text-muted: #8f8c85;
+  --color-surface-line: rgb(255 255 255 / 0.14);
+  --color-surface-line-active: rgb(255 255 255 / 0.45);
+  /* Paper (A) */
+  --color-paper: #f7f3ec;
+  --color-ink: #2b2521;
+  --color-ink-muted: #6f665e;
+  --color-hairline: rgb(43 37 33 / 0.6);
+  /* Accent (C): the breakdown bar and legend */
+  --color-accent: #2c5bff;
+  --color-segment-1: #2c5bff;
+  --color-segment-2: #8aa4ff;
+  --color-segment-3: #c3d0ff;
+  --color-segment-4: #9e9a92;
+  --color-segment-5: #c8c4bc;
+  --color-segment-6: #dedad2;
+  --color-focus: #8aa4ff;
+  /* Box: dark by default (C's surface) */
+  --color-box: #0d0d0c;
+  --color-box-line: rgb(255 255 255 / 0.14);
+  --color-box-line-active: rgb(255 255 255 / 0.45);
+  --color-box-text: #f3f1ec;
+  --color-box-muted: #8f8c85;
+  --color-button: #f3f1ec; /* C's button: light pill on dark */
+  --color-button-text: #0d0d0c;
+  --color-chip-line: rgb(255 255 255 / 0.2);
+  --color-slot: #000000;
+  --shadow-device: none;
+  --radius-device: 28px;
+  --radius-control: 10px;
+  --paper-shadow: drop-shadow(0 10px 18px rgb(0 0 0 / 0.55));
+  --zigzag: 7px;
+  --display-size: 2.25rem;
+  --label-tracking: 0.14em;
+  /* Receipt mono size follows the paper's width so no label wraps: width / 23 leaves room for 36 characters (Space Mono advance ≈ 0.61em). */
+  --receipt-font: clamp(11px, calc((100cqi - 40px) / 23), 14px);
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+}
+:root[data-proto='D'][data-box='light'] {
+  --color-box: #f5f4f1; /* B's off-white */
+  --color-box-line: rgb(22 22 21 / 0.12);
+  --color-box-line-active: rgb(22 22 21 / 0.4);
+  --color-box-text: #161615;
+  --color-box-muted: #66655f;
+  --color-button: #161615; /* C's button, inverted for a light box */
+  --color-button-text: #f5f4f1;
+  --color-chip-line: rgb(22 22 21 / 0.2);
+  --color-slot: #161615;
+  --shadow-device: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 18px 40px -24px rgb(0 0 0 / 0.6);
+}
+
+/* Paper: container for the width-based mono size. */
+:root[data-proto='D'] .d-paper {
+  container-type: inline-size;
+}
+:root[data-proto='D'] [data-receipt] {
+  font-family: var(--font-mono);
+  font-size: var(--receipt-font);
+  border-radius: 0;
+  box-shadow: none;
+}
+:root[data-proto='D'] [data-receipt] .text-small {
+  font-size: 0.92em; /* secondary text scales with the paper, never larger than the labels */
+}
+:root[data-proto='D'] [data-receipt] .text-label {
+  font-size: 0.8em;
+}
+:root[data-proto='D'] [data-receipt] .text-total {
+  font-size: 1.4em;
+  line-height: 1.2;
+}
+:root[data-proto='D'] [data-receipt] hr {
+  border-top-style: dotted;
+  border-top-width: 2px;
+}
+:root[data-proto='D'] [data-receipt] h2,
+:root[data-proto='D'] [data-receipt] footer p:first-child {
+  letter-spacing: 0.12em;
+}
+/* Torn edges: zigzag bottom always (the leading edge); zigzag top once the roll has been torn. */
+:root[data-proto='D'] .d-tear-edge {
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+}
+:root[data-proto='D'] .d-tear-edge[data-torn-top] {
+  -webkit-mask:
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(2 * var(--zigzag)) var(--zigzag) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+  mask:
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(2 * var(--zigzag)) var(--zigzag) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--zigzag)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--zigzag)) var(--zigzag) repeat-x;
+}
+/* Keep the first and last rows clear of the teeth. */
+:root[data-proto='D'] .d-tear-edge [data-receipt] {
+  padding-block: calc(1.5rem + var(--zigzag));
+}

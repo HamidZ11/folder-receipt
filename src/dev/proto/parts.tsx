@@ -41,11 +41,8 @@ export function PaperArea({
     onTear: async () => {
       if (!receipt) return;
       try {
-        // embedFonts stays off: modern-screenshot embeds web fonts via an inline <style>, which the
-        // CSP (style-src 'self') blocks. The PNG falls back to the system fonts (HANDOVER: open question).
-        const blob = await exportNodePng(<ExportFrameShell>{render(receipt, { forExport: true, redact: true })}</ExportFrameShell>, 'tall', {
-          embedFonts: false,
-        });
+        // A/B/C keep system fonts in the PNG (reference only); D embeds its fonts CSP-safely.
+        const blob = await exportNodePng(<ExportFrameShell>{render(receipt, { forExport: true, redact: true })}</ExportFrameShell>, 'tall');
         download(blob, copy.export.fileName(receipt.stats.receiptNo, 'tall'));
       } catch {
         /* the export failed; the paper still comes back */

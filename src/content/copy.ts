@@ -38,7 +38,19 @@ export const copy = {
   receiptSlot: {
     label: 'Receipt',
   },
+  device: {
+    // Tiny uppercase labels on the device (uppercase is CSS, so screen readers get normal case).
+    input: 'Input',
+    files: 'Files',
+    status: 'Status',
+    state: { ready: 'Ready', scanning: 'Scanning', printing: 'Printing', printed: 'Printed' },
+    tearHint: 'Pull to tear off and save',
+    exportGroup: 'Save as PNG',
+  },
   export: {
+    tallShort: 'Tall',
+    squareShort: 'Square',
+    namesShort: 'Names',
     showNames: 'Show file names',
     tall: 'Save tall PNG',
     square: 'Save square PNG',

@@ -4,5 +4,5 @@ export const protoCopy = {
   display: { ready: 'Ready', scanning: 'Scanning', files: 'Files', done: 'Printed' },
   labels: { input: 'Input', status: 'Status', output: 'Output' },
   tear: 'Pull to tear off and save',
-  picker: ['Thermal', 'Object', 'Editorial'] as const,
+  picker: ['Thermal', 'Object', 'Editorial', 'Combined'] as const,
 };

@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useFolderScan, type Receipt } from '../../hooks/useFolderScan.ts';
 import { makeSampleScan } from '../../lib/sample/sampleFolder.ts';
 import { computeStats } from '../../lib/stats/computeStats.ts';
+import { FIXTURES, makeFixture, type FixtureName } from '../fixtures.ts';
 
 export type Phase = 'idle' | 'scanning' | 'printing' | 'done';
 export const PHASES: readonly Phase[] = ['idle', 'scanning', 'printing', 'done'];
 
+/** The sample, or a break-ui fixture via ?data= (worst, empty, one, 100k, one-category). */
 const sample = (print: boolean): Receipt => {
-  const scan = makeSampleScan(Date.now());
-  return { scan, stats: computeStats(scan), source: 'sample', print };
+  const name = new URLSearchParams(location.search).get('data');
+  const fixture = name && (FIXTURES as readonly string[]).includes(name) ? (name as FixtureName) : null;
+  const scan = fixture ? makeFixture(fixture, Date.now()) : makeSampleScan(Date.now());
+  return { scan, stats: computeStats(scan), source: fixture && fixture !== 'demo' ? 'folder' : 'sample', print };
 };
 
 const IDLE_MS = 700;

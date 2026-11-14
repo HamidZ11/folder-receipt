@@ -21,7 +21,7 @@ export function ExportBar({ receipt, renderExport }: Props) {
     setFailed(false);
     try {
       const blob = renderExport
-        ? await exportNodePng(renderExport(!showNames), shape, { embedFonts: false }) // CSP blocks font embedding (inline <style>)
+        ? await exportNodePng(renderExport(!showNames), shape)
         : await exportReceiptPng(receipt, shape, !showNames);
       download(blob, copy.export.fileName(receipt.stats.receiptNo, shape));
     } catch {

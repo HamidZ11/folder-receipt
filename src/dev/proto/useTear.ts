@@ -11,6 +11,8 @@ type Options = {
   /** +1: the slot is above the paper, so tearing pulls down. −1: slot below, pulls up. */
   away: 1 | -1;
   onTear: () => void;
+  /** Fires the instant the paper rips (before the tear motion). */
+  onTearStart?: () => void;
   /** Attach only while there is paper to tear. */
   enabled: boolean;
 };
@@ -22,11 +24,13 @@ type Options = {
  * release velocity brings it home. Touch only starts on [data-tear-grip], so
  * the rest of a long receipt still scrolls the page.
  */
-export function useTear(paper: RefObject<HTMLElement | null>, { away, onTear, enabled }: Options) {
+export function useTear(paper: RefObject<HTMLElement | null>, { away, onTear, onTearStart, enabled }: Options) {
   const tear = useRef<Animation | null>(null);
   const onTearRef = useRef(onTear);
+  const onTearStartRef = useRef(onTearStart);
   useEffect(() => {
     onTearRef.current = onTear;
+    onTearStartRef.current = onTearStart;
   });
 
   useEffect(() => {
@@ -81,6 +85,7 @@ export function useTear(paper: RefObject<HTMLElement | null>, { away, onTear, en
 
       if (offset > TEAR_DISTANCE || (velocity > TEAR_VELOCITY && offset > FLICK_MIN)) {
         // Tear: keep going at the release speed, a slight twist, gone.
+        onTearStartRef.current?.();
         const { feed } = readFeedTokens();
         const travel = Math.min(320, Math.max(120, velocity * 220));
         const twist = (e.clientX - startX) * 0.02;
@@ -95,7 +100,9 @@ export function useTear(paper: RefObject<HTMLElement | null>, { away, onTear, en
             );
         tear.current.finished.then(() => onTearRef.current(), () => {});
       } else if (reduced()) {
-        // No spring under reduced motion: settle straight home.
+        // No spring under reduced motion: a short, plain settle home (no bounce, no jump).
+        const { feed } = readFeedTokens();
+        el.animate([{ transform: from }, { transform: 'translateY(0)' }], { duration: 150, easing: feed.landingEase });
       } else {
         // Snap back: spring seeded with the release velocity (towards the slot is negative progress).
         const progressVelocity = offset === 0 ? 0 : (-velocity * 1000) / -offset;
