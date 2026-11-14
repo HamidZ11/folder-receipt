@@ -7,6 +7,11 @@
  * (e.g. --color-paper -> bg-paper / text-paper, --radius-card -> rounded-card).
  * Tailwind's default palette, fonts, radii, shadows and easings are cleared
  * so nothing outside this file can leak into the UI.
+ *
+ * Visual directions (design branch): src/styles/themes/{thermal,object,editorial}.css
+ * override these tokens, scoped to :root[data-proto] and loaded only by the dev
+ * prototype switcher (?proto=A|B|C). To adopt one, @import its file here and drop
+ * the [data-proto] scoping. This file stays the single switch point.
  */
 
 @theme {

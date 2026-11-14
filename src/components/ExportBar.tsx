@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { copy } from '../content/copy.ts';
 import type { Receipt } from '../hooks/useFolderScan.ts';
-import { download, exportReceiptPng, type ExportShape } from '../lib/export/exportReceipt.tsx';
+import type { ReactNode } from 'react';
+import { download, exportNodePng, exportReceiptPng, type ExportShape } from '../lib/export/exportReceipt.tsx';
 
 /** Save the receipt as a PNG. Names are redacted unless the user ticks "Show file names". */
-export function ExportBar({ receipt }: { receipt: Receipt }) {
+type Props = {
+  receipt: Receipt;
+  /** Design prototypes: render their own export frame (with web fonts embedded). */
+  renderExport?: (redact: boolean) => ReactNode;
+};
+
+export function ExportBar({ receipt, renderExport }: Props) {
   const [showNames, setShowNames] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -13,7 +20,9 @@ export function ExportBar({ receipt }: { receipt: Receipt }) {
     setBusy(true);
     setFailed(false);
     try {
-      const blob = await exportReceiptPng(receipt, shape, !showNames);
+      const blob = renderExport
+        ? await exportNodePng(renderExport(!showNames), shape, { embedFonts: false }) // CSP blocks font embedding (inline <style>)
+        : await exportReceiptPng(receipt, shape, !showNames);
       download(blob, copy.export.fileName(receipt.stats.receiptNo, shape));
     } catch {
       setFailed(true);

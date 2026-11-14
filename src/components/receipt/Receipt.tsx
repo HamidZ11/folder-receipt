@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { SITE_URL } from '../../config.ts';
 import { copy } from '../../content/copy.ts';
 import { isInstaller } from '../../lib/stats/categories.ts';
@@ -20,9 +21,11 @@ type Props = {
   forExport?: boolean;
   /** Replace file and folder names with ▇▇▇▇ (keeping extensions). */
   redact?: boolean;
+  /** Extra footer content (design prototypes: a barcode). */
+  footerExtra?: ReactNode;
 };
 
-export function Receipt({ stats, files, sample, forExport = false, redact = false }: Props) {
+export function Receipt({ stats, files, sample, forExport = false, redact = false, footerExtra }: Props) {
   const t = copy.receipt;
   const folder = redact ? redactFolderName() : stats.folderName || t.untitledFolder;
   const live = !forExport;
@@ -32,6 +35,7 @@ export function Receipt({ stats, files, sample, forExport = false, redact = fals
 
   return (
     <article
+      data-receipt
       aria-label={t.ariaLabel(folder)}
       className="rounded-card bg-paper px-5 py-6 text-body text-ink shadow-paper sm:px-6"
     >
@@ -152,6 +156,7 @@ export function Receipt({ stats, files, sample, forExport = false, redact = fals
         <p data-row className="mt-3 text-small">
           {SITE_URL}
         </p>
+        {footerExtra}
       </footer>
     </article>
   );

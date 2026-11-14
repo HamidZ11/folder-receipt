@@ -34,10 +34,10 @@ export function landingDistance(t: FeedTokens): number {
 }
 
 /**
- * WAAPI keyframes: the paper rises out of a slot below it (header first, like a
- * till printer). It starts `distancePx` below its resting place (its height plus
- * the slot bleed, so nothing shows before the feed), feeds up at a constant
- * speed, then lands with the matched ease-out.
+ * WAAPI keyframes: the paper starts `distancePx` from its resting place and feeds
+ * to it at a constant speed, then lands with the matched ease-out. Positive =
+ * below (rises out of a slot underneath, header first); negative = above
+ * (feeds down out of a slot overhead, footer first).
  */
 export function feedKeyframes(t: FeedTokens, distancePx: number): Keyframe[] {
   const dl = landingDistance(t);

@@ -1,0 +1,46 @@
+/* B · Object. A precise, flat hardware printer. Overrides tokens.css while :root[data-proto="B"]. */
+:root[data-proto='B'] {
+  color-scheme: light;
+  --color-page: #e7e6e2;
+  --color-surface: #f5f4f1; /* device body */
+  --color-surface-line: rgb(22 22 21 / 0.12);
+  --color-surface-line-active: rgb(22 22 21 / 0.4);
+  --color-text: #161615;
+  --color-text-muted: #66655f;
+  --color-paper: #ffffff;
+  --color-ink: #141414;
+  --color-ink-muted: #6b6b6b;
+  --color-hairline: rgb(20 20 20 / 0.12);
+  --color-accent: #ff4f17; /* the one strong accent */
+  --color-segment-1: #ff4f17;
+  --color-segment-2: #161615;
+  --color-segment-3: #5f5e59;
+  --color-segment-4: #9e9d97;
+  --color-segment-5: #c9c8c3;
+  --color-segment-6: #e2e1dd;
+  --color-focus: #ff4f17;
+  --color-display-bg: #161615;
+  --color-display-text: #f5f4f1;
+  --color-slot: #161615;
+  --radius-device: 28px;
+  --radius-card: 4px;
+  --radius-control: 999px;
+  --shadow-device: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 1px 2px rgb(0 0 0 / 0.06), 0 18px 40px -24px rgb(0 0 0 / 0.35);
+  --shadow-paper: 0 1px 0 rgb(0 0 0 / 0.05), 0 14px 28px -16px rgb(0 0 0 / 0.3);
+  --paper-shadow: none;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+:root[data-proto='B'][data-font='2'] {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+}
+:root[data-proto='B'] [data-receipt] .num {
+  font-family: var(--font-mono);
+}
+:root[data-proto='B'] [data-receipt] h2,
+:root[data-proto='B'] [data-receipt] h3,
+:root[data-proto='B'] [data-receipt] footer p:first-child {
+  letter-spacing: 0.14em;
+  font-size: 0.625rem;
+}

@@ -10,8 +10,22 @@ import { useFolderScan, type Receipt } from './hooks/useFolderScan.ts';
 // import (and the fixtures) from the production build. Checked by `pnpm build` + grep.
 const DevData =
   import.meta.env.DEV || import.meta.env.VITE_WORST_CASES === '1' ? lazy(() => import('./dev/DevData.tsx')) : null;
+// Dev-only design prototypes (?proto=A|B|C). Same gating, so production never ships them.
+const ProtoHarness =
+  import.meta.env.DEV || import.meta.env.VITE_WORST_CASES === '1' ? lazy(() => import('./dev/proto/Harness.tsx')) : null;
+const wantsProto = () => typeof location !== 'undefined' && new URLSearchParams(location.search).has('proto');
 
 export function App() {
+  if (ProtoHarness && wantsProto())
+    return (
+      <Suspense fallback={null}>
+        <ProtoHarness />
+      </Suspense>
+    );
+  return <Live />;
+}
+
+function Live() {
   const { receipt, status, onDrop, onPick } = useFolderScan();
   const [devReceipt, setDevReceipt] = useState<Receipt | null>(null);
   const shown = devReceipt ?? receipt;

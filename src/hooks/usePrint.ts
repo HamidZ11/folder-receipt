@@ -14,7 +14,15 @@ const MODIFIERS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab']
  * transform, so it runs on the compositor). Click, tap or a key skips to the
  * end with finish(); the skip itself never animates.
  */
-export function usePrint(paper: RefObject<HTMLElement | null>, receipt: Receipt, scanning: boolean) {
+/** 'up': paper rises out of a slot below it (header first). 'down': it feeds down out of a slot above (footer first). */
+export type FeedDirection = 'up' | 'down';
+
+export function usePrint(
+  paper: RefObject<HTMLElement | null>,
+  receipt: Receipt | null,
+  scanning: boolean,
+  direction: FeedDirection = 'up',
+) {
   const print = useRef<Animation | null>(null);
   const exit = useRef<Animation | null>(null);
 
@@ -44,7 +52,7 @@ export function usePrint(paper: RefObject<HTMLElement | null>, receipt: Receipt,
     exit.current?.cancel();
     exit.current = null;
     print.current?.finish();
-    if (!receipt.print) return;
+    if (!receipt?.print) return;
 
     if (receipt.source === 'sample') {
       try {
@@ -60,7 +68,7 @@ export function usePrint(paper: RefObject<HTMLElement | null>, receipt: Receipt,
     const anim = reduced
       ? // Entering → strong ease-out, same curve as the landing.
         el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reducedMs, easing: feed.landingEase, fill: 'backwards' })
-      : el.animate(feedKeyframes(feed, height + bleedPx), {
+      : el.animate(feedKeyframes(feed, direction === 'up' ? height + bleedPx : -height), {
           duration: feedDuration(height, feed),
           fill: 'backwards',
         });
@@ -83,5 +91,5 @@ export function usePrint(paper: RefObject<HTMLElement | null>, receipt: Receipt,
       done();
       anim.finish();
     };
-  }, [receipt, paper]);
+  }, [receipt, paper, direction]);
 }

@@ -24,6 +24,10 @@ function cspMeta(): Plugin {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), cspMeta()],
+  build: {
+    // Never inline fonts as data: URIs; the CSP only allows fonts from this origin (default-src 'self').
+    assetsInlineLimit: (file) => (/\.(woff2?|ttf|otf)$/.test(file) ? false : undefined),
+  },
   test: {
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'csp.test.ts'],
     environment: 'node',
