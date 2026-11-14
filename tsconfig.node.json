@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "csp.ts", "csp.test.ts", "e2e"]
+  "include": ["vite.config.ts", "playwright.config.ts", "csp.ts", "csp.test.ts", "csp.headers.test.ts", "e2e"]
 }

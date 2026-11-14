@@ -19,6 +19,25 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - once per session;
 - a drop mid-print.
 
+## Ship-check (static-site parts, 14 Nov)
+
+| Item | Result | Evidence |
+|---|---|---|
+| CSP | ✓ | The meta tag is in `dist/index.html` and `dist/404.html` (e2e). The header is in `vercel.json`. `csp.test.ts` keeps them in sync, and `csp.headers.test.ts` asserts there's no `unsafe-*`. Export embeds fonts without any CSP change. |
+| Security headers | ✓ (config) | `vercel.json` sets nosniff, `no-referrer`, `X-Frame-Options: DENY`, HSTS for 2 years, a Permissions-Policy (no camera, mic or location), COOP and CORP same-origin. Checked by unit test. **Not verified live: run `curl -I` after deploy.** |
+| pnpm audit | ✓ prod / note dev | `pnpm audit --prod`: no known vulnerabilities. All deps: 1 moderate (`minimatch` < 11.0.1, ReDoS), reachable only through ESLint, a dev tool that doesn't ship. |
+| Secrets | ✓ | Nothing in git history matches key or secret patterns. `.env*` is ignored. |
+| Title, description, canonical | ✓ | Injected from `copy.meta` at build time. **The canonical uses the placeholder `SITE_URL` (`folder-receipt.vercel.app`).** |
+| OG image and Twitter card | ✓ | `public/og.png` is 1200×630, made from a real torn export of the sample (`OG=1` spec). There are og:* and `twitter:card=summary_large_image` tags. The absolute image URL uses the placeholder domain. **Link preview not checked (needs a deploy).** |
+| Favicon | ✓ | `public/favicon.svg`, returns 200 (e2e). No apple-touch-icon PNG: iOS home-screen icons fall back. |
+| 404 page | ✓ | `dist/404.html` with its own CSP, `noindex`, and a link home (e2e). Vercel serves it for unknown paths; **not verifiable before deploy.** |
+| robots.txt | ✓ | `public/robots.txt` allows all. No sitemap (one page). |
+| Lighthouse, mobile | ✓ perf 98, a11y 100 | Best practices 96, SEO 100. LCP 2.1s, TBT 10ms, CLS 0. The 4 best-practices points: about 30% of the text is under 12px (11px labels, receipt mono at its 390px minimum). That's a design call. |
+| Lighthouse, desktop | ✓ 100 / 100 | Best practices 100, SEO 100. LCP 0.5s. |
+| Auth, DB, rate limits, spend caps, AI | N/A | Static site: no backend, no accounts, no paid APIs. |
+| Analytics, error tracking, privacy policy | N/A | Nothing is collected. |
+| Real phone | ✗ not done | Needs Hamid: tear on touch, folder picker hidden on phones, iOS export download. |
+
 ## D is the real page (branch `design`, 14 Nov)
 
 The prototype switcher, A/B/C and their theme files have been removed. D's values now live in `tokens.css`; `receipt.css` holds the paper structure (token-only).

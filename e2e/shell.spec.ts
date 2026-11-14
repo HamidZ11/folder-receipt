@@ -54,3 +54,27 @@ for (const vp of widths) {
     await page.screenshot({ path: `screens/slice-1/${vp.name}-${browserName}.png`, fullPage: true });
   });
 }
+
+test('404 page: own CSP, noindex, a way back', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  await page.goto('/404.html');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
+  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveCount(1);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+  await expect(page.getByRole('link', { name: 'Back to the receipt printer' })).toHaveAttribute('href', '/');
+  expect(errors).toEqual([]);
+});
+
+test('head: title, description, OG and Twitter card, favicon', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveTitle('Folder Receipt: a printed receipt of any folder');
+  const meta = (sel: string) => page.locator(sel).getAttribute('content');
+  expect(await meta('meta[name="description"]')).toContain('Nothing leaves your browser.');
+  expect(await meta('meta[property="og:image"]')).toMatch(/^https:\/\/.+\/og\.png$/);
+  expect(await meta('meta[name="twitter:card"]')).toBe('summary_large_image');
+  const icon = await page.locator('link[rel="icon"]').getAttribute('href');
+  expect((await page.request.get(icon!)).status()).toBe(200);
+  expect((await page.request.get('/og.png')).headers()['content-type']).toBe('image/png');
+  expect(await (await page.request.get('/robots.txt')).text()).toContain('User-agent: *');
+});

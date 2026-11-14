@@ -4,7 +4,16 @@
 
 export const copy = {
   meta: {
-    title: 'Folder Receipt',
+    title: 'Folder Receipt: a printed receipt of any folder',
+    description:
+      'Drop a folder and get a receipt of what’s inside: the biggest files, leftover installers, duplicates and where your space went. Nothing leaves your browser.',
+    ogImageAlt: 'A thermal receipt listing a Downloads folder: 1,210 files, 94.1 GB, total savings 6.8 GB.',
+  },
+  notFound: {
+    title: 'Page not found',
+    label: 'No such page',
+    body: 'There’s nothing at this address.',
+    back: 'Back to the receipt printer',
   },
   dropZone: {
     title: 'Drop your folder here',
