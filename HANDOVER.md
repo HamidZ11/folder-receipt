@@ -19,7 +19,22 @@ Verified at the last commit: `pnpm verify` exits 0. That covers typecheck, lint,
 - once per session;
 - a drop mid-print.
 
-## Design phase (branch `design`, 14 Nov)
+## D is the real page (branch `design`, 14 Nov)
+
+The prototype switcher, A/B/C and their theme files have been removed. D's values now live in `tokens.css`; `receipt.css` holds the paper structure (token-only).
+- **Box: dark.** Hamid's reply left the dark/light choice blank, so I chose dark (the case he gave instructions for). It has a slot lip: a dark seam drawn over the paper's top edge, so the paper emerges from under it. The light box values are in a comment at the end of `tokens.css` and swap in with one edit.
+- **Desktop:** the column widens to 30rem from the `sm` breakpoint. The receipt mono reaches 15px. The 390px behaviour and the no-wrap e2e are unchanged.
+- **Legend:** an even grid with the percentage under each name. 6 entries make 3+3; 4 make 2+2. e2e checks two rows of three.
+- **Privacy line:** inside the device, under the subtitle. Nothing sits below the paper.
+- **NAMES:** has an on/off light in the STATUS light style, and `aria-pressed` is checked by e2e.
+- **Footer copy:** "Keep this receipt. Your files did." (no longer a TODO).
+- **Status line** (skipped counts, errors, Safari note): now inside the device, under the counter.
+- **Export:** one path. The thermal paper with Space Mono and Manrope embedded, CSP-safe.
+- **Fonts:** only Manrope and Space Mono remain installed.
+- **Screenshots:** `screens/final/` holds idle, scanning, mid-print, done and torn export at 1280px and 390px, plus a WebKit end state.
+- **Idle in screenshots** means a return visit, where the sample shows without printing; there's no receipt-less state in the real page.
+
+## Design phase (branch `design`, 14 Nov). History: D was chosen; A/B/C have been removed
 
 Three directions behind a dev-only switcher. Run `pnpm dev`, then open `http://localhost:5173/?proto=A` (or `B`, `C`). Production never ships it: the same gate as the worst-case toggle applies, and `check:prod` also greps for `proto-picker`.
 - **Keys:** 1–3 or ←/→ switch direction; R replays the scan and print; F swaps the font pairing (`?font=1|2`).

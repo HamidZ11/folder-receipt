@@ -5,21 +5,23 @@ import { domToBlob } from 'modern-screenshot';
 import type { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { Receipt } from '../../components/receipt/Receipt.tsx';
+import { ThermalPaper, type PaperOptions } from '../../components/receipt/ThermalPaper.tsx';
+import { EXPORT_FONTS } from './exportFonts.ts';
+import { fontFaceCss } from './fontFaceCss.ts';
 import type { Receipt as ReceiptData } from '../../hooks/useFolderScan.ts';
 
 export type ExportShape = 'tall' | 'square';
 
-function ExportFrame({ receipt, redact }: { receipt: ReceiptData; redact: boolean }) {
-  return (
+/** The receipt as a PNG: the thermal paper, static, with Space Mono and Manrope embedded (CSP-safe). */
+export async function exportReceiptPng(receipt: ReceiptData, shape: ExportShape, opts: Omit<PaperOptions, 'forExport'>): Promise<Blob> {
+  const fontCss = await fontFaceCss(EXPORT_FONTS);
+  return exportNodePng(
     <ExportFrameShell>
-      <Receipt stats={receipt.stats} files={receipt.scan.files} sample={receipt.source === 'sample'} forExport redact={redact} />
-    </ExportFrameShell>
+      <ThermalPaper receipt={receipt} forExport {...opts} />
+    </ExportFrameShell>,
+    shape,
+    { fontCss },
   );
-}
-
-export function exportReceiptPng(receipt: ReceiptData, shape: ExportShape, redact: boolean): Promise<Blob> {
-  return exportNodePng(<ExportFrame receipt={receipt} redact={redact} />, shape);
 }
 
 /** Wraps any receipt node in the export frame (page background, padding, fixed width). */

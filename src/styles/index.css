@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import './receipt.css';
 
 /* Base styles only. No visual values here — they come from tokens.css. */
 @layer base {

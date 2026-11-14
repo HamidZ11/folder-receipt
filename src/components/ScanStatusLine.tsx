@@ -9,9 +9,9 @@ const INVISIBLE_IN_SAFARI = new Set<keyof SkipCounts>(['dsStore', 'dotfiles', 'g
 const SAFARI = hidesDotfiles();
 
 /** Scan state, outside the receipt. Polite live region so screen readers hear the result. */
-export function ScanStatusLine({ status, receipt }: { status: ScanStatus; receipt: Receipt }) {
+export function ScanStatusLine({ status, receipt, className = 'mt-4 min-h-10 text-small text-text-muted' }: { status: ScanStatus; receipt: Receipt; className?: string }) {
   return (
-    <p role="status" aria-live="polite" data-testid="scan-status" className="mt-4 min-h-10 text-small text-text-muted">
+    <p role="status" aria-live="polite" data-testid="scan-status" className={className}>
       <Message status={status} receipt={receipt} />
     </p>
   );

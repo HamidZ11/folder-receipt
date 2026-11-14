@@ -1,17 +1,12 @@
 /*
  * Folder Receipt — design tokens.
- * THE ONLY FILE WITH VISUAL VALUES. Every value here is a placeholder
- * taken from the CONTEXT.md §2 mock; restyle the app by editing this file.
+ * THE ONLY FILE WITH VISUAL VALUES. Direction D (14 Nov 2026): B's device,
+ * A's thermal paper, C's colours. Restyle the app by editing this file.
  *
  * Tailwind v4 reads @theme and generates utilities from it
  * (e.g. --color-paper -> bg-paper / text-paper, --radius-card -> rounded-card).
  * Tailwind's default palette, fonts, radii, shadows and easings are cleared
  * so nothing outside this file can leak into the UI.
- *
- * Visual directions (design branch): src/styles/themes/{thermal,object,editorial}.css
- * override these tokens, scoped to :root[data-proto] and loaded only by the dev
- * prototype switcher (?proto=A|B|C). To adopt one, @import its file here and drop
- * the [data-proto] scoping. This file stays the single switch point.
  */
 
 @theme {
@@ -27,31 +22,43 @@
   --animate-*: initial;
 
   /* ---- Colour: page ---- */
-  --color-page: #111111;
-  --color-surface: #191919; /* drop-zone card */
-  --color-surface-line: rgb(255 255 255 / 0.08); /* 1px border on dark */
-  --color-surface-line-active: rgb(255 255 255 / 0.24); /* drag-over */
-  --color-text: #f5f5f4;
-  --color-text-muted: #8a8a87;
+  --color-page: #0d0d0c;
+  --color-surface: #0d0d0c;
+  --color-surface-line: rgb(255 255 255 / 0.14);
+  --color-surface-line-active: rgb(255 255 255 / 0.45);
+  --color-text: #f3f1ec;
+  --color-text-muted: #8f8c85;
 
-  /* ---- Colour: receipt paper ---- */
-  --color-paper: #f3f1ec;
-  --color-ink: #1b1b1a;
-  --color-ink-muted: #6f6d68;
-  --color-hairline: rgb(27 27 26 / 0.14);
+  /* ---- Colour: the device box (dark). Light alternative at the end of this file. ---- */
+  --color-box: #0d0d0c;
+  --color-box-line: rgb(255 255 255 / 0.14);
+  --color-box-line-active: rgb(255 255 255 / 0.45);
+  --color-box-text: #f3f1ec;
+  --color-box-muted: #8f8c85;
+  --color-button: #f3f1ec;
+  --color-button-text: #0d0d0c;
+  --color-chip-line: rgb(255 255 255 / 0.2);
+  --color-slot: #000000; /* the slot lip */
+  --color-slot-highlight: rgb(255 255 255 / 0.12); /* light catching the lip's lower edge */
 
-  /* ---- Colour: the one accent + breakdown segments (tints of the accent) ---- */
-  --color-accent: #2f6bff;
-  --color-segment-1: #2f6bff;
-  --color-segment-2: #7ea2ff;
-  --color-segment-3: #b4c8ff;
-  --color-segment-4: #a3a19c;
-  --color-segment-5: #c9c7c1;
-  --color-segment-6: #dedcd6;
+  /* ---- Colour: thermal paper ---- */
+  --color-paper: #f7f3ec;
+  --color-ink: #2b2521; /* slightly warm black */
+  --color-ink-muted: #6f665e;
+  --color-hairline: rgb(43 37 33 / 0.6);
+
+  /* ---- Colour: the one accent (breakdown bar, legend, status lights) ---- */
+  --color-accent: #2c5bff;
+  --color-segment-1: #2c5bff;
+  --color-segment-2: #8aa4ff;
+  --color-segment-3: #c3d0ff;
+  --color-segment-4: #9e9a92;
+  --color-segment-5: #c8c4bc;
+  --color-segment-6: #dedad2;
 
   /* ---- Colour: status ---- */
   --color-danger: #e5484d;
-  --color-focus: #7ea2ff;
+  --color-focus: #8aa4ff;
 
   /* ---- Colour: dev-only break-ui toggle (never in production) ---- */
   --color-dev-track: #2a2a2a;
@@ -59,12 +66,12 @@
   --color-dev-text: #a3a3a0;
   --color-dev-text-active: #111111;
 
-  /* ---- Type: max 2 families. System stacks = no font files to load or embed ---- */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* ---- Type: exactly 2 families, self-hosted (src/styles/fonts.ts) ---- */
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif; /* page and device */
+  --font-mono: 'Space Mono', ui-monospace, monospace; /* receipt and counter */
 
   /* Scale: size / line-height / tracking */
-  --text-label: 0.6875rem; /* 11px, uppercase section labels */
+  --text-label: 0.6875rem; /* 11px, uppercase labels */
   --text-label--line-height: 1rem;
   --text-label--letter-spacing: 0.08em;
   --text-small: 0.8125rem; /* 13px */
@@ -74,7 +81,7 @@
   --text-title: 1.0625rem; /* 17px */
   --text-title--line-height: 1.5rem;
   --text-title--letter-spacing: -0.01em;
-  --text-total: 1.375rem; /* 22px, total savings */
+  --text-total: 1.375rem; /* the receipt overrides this relative to its mono size */
   --text-total--line-height: 1.75rem;
   --text-total--letter-spacing: -0.02em;
 
@@ -86,15 +93,18 @@
   --spacing: 4px;
 
   /* ---- Layout ---- */
-  --container-receipt: 26rem; /* 416px column; fits 390px screens with page gutter */
+  --container-receipt: 26rem; /* 416px column on phones; also the export width */
+  --container-wide: 30rem; /* 480px column from the sm breakpoint: wider paper on desktop */
 
   /* ---- Radii ---- */
-  --radius-card: 16px;
+  --radius-card: 0px; /* thermal paper has cut edges */
+  --radius-device: 28px;
   --radius-control: 10px;
   --radius-bar: 3px;
 
-  /* ---- Shadows (layered: small sharp + large soft) ---- */
-  --shadow-paper: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+  /* ---- Shadows ---- */
+  --shadow-paper: none; /* the paper's shadow is a drop-shadow filter (--paper-shadow) so the torn-edge mask can't clip it */
+  --shadow-device: none;
 
   /* ---- Motion: easings (never ease-in) ---- */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -111,17 +121,28 @@
   --page-gutter: 16px;
   --page-gutter-wide: 32px;
 
+  /* Device */
+  --display-size: 2.25rem; /* the mono file counter */
+  --label-tracking: 0.14em; /* tiny uppercase labels */
+
+  /* Paper */
+  --paper-shadow: drop-shadow(0 10px 18px rgb(0 0 0 / 0.55));
+  --zigzag: 7px; /* torn-edge tooth height */
+  --rule-width: 2px; /* dotted rules */
+  /* Receipt mono size follows the paper's width so no label wraps:
+     (paper width − 40px padding) / 23 leaves room for ~36 Space Mono characters. */
+  --receipt-font: clamp(11px, calc((100cqi - 40px) / 23), 15px);
+
   /* Motion: durations */
   --duration-press: 120ms;
   --duration-hover: 150ms;
   --duration-expand: 240ms;
   --duration-fade: 200ms;
 
-  /* Motion: print (slice 5). Print-while-feeding: only the paper moves.
-     It rises out of the slot below it, header first (till printer), at a
-     constant speed (linear), then lands
-     with a short ease-out. The landing distance is derived from the curve's
-     starting slope so the speed doesn't jump at the join (src/lib/print/feed.ts). */
+  /* Motion: print. Print-while-feeding: only the paper moves. It feeds down
+     out of the device's slot (footer first) at a constant speed, then lands
+     with a short ease-out whose distance is derived from the curve's starting
+     slope, so the speed doesn't jump at the join (src/lib/print/feed.ts). */
   --print-feed-speed: 520; /* px per second; duration = paper height / speed */
   --print-feed-min: 1400ms;
   --print-feed-max: 2200ms;
@@ -134,3 +155,18 @@
   /* Press feedback */
   --press-scale: 0.97;
 }
+
+/*
+ * Light box alternative (B's off-white), not in use. To switch, replace the
+ * box values in @theme above with these:
+ *   --color-box: #f5f4f1;
+ *   --color-box-line: rgb(22 22 21 / 0.12);
+ *   --color-box-line-active: rgb(22 22 21 / 0.4);
+ *   --color-box-text: #161615;
+ *   --color-box-muted: #66655f;
+ *   --color-button: #161615;
+ *   --color-button-text: #f5f4f1;
+ *   --color-chip-line: rgb(22 22 21 / 0.2);
+ *   --color-slot: #161615;
+ *   --shadow-device: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 18px 40px -24px rgb(0 0 0 / 0.6);
+ */

@@ -99,7 +99,7 @@ export const copy = {
     },
     footer: {
       thanks: 'Thank you for scanning', // TODO(Hamid)
-      keep: 'Please keep this receipt. Your files did.', // TODO(Hamid)
+      keep: 'Keep this receipt. Your files did.',
       sample: 'Example receipt with fictional data',
     },
   },

@@ -1,6 +1,6 @@
 import { useEffect, useRef, type RefObject } from 'react';
-import { readFeedTokens } from '../../lib/print/feed.ts';
-import { rubberband, springCurve } from './spring.ts';
+import { readFeedTokens } from '../lib/print/feed.ts';
+import { rubberband, springCurve } from '../lib/motion/spring.ts';
 
 const HYSTERESIS = 6; // px before a press becomes a drag
 const TEAR_DISTANCE = 120; // px away from the slot

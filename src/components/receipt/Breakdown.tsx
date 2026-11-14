@@ -6,6 +6,7 @@ import { SectionLabel } from './parts.tsx';
 // Literal class names so Tailwind generates them. Other always takes the last tone.
 const TONES = ['bg-segment-1', 'bg-segment-2', 'bg-segment-3', 'bg-segment-4', 'bg-segment-5'];
 const OTHER_TONE = 'bg-segment-6';
+const COLS: Record<number, string> = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' };
 const toneOf = (s: BreakdownSegment, i: number) => (s.category === 'Other' ? OTHER_TONE : TONES[i] ?? OTHER_TONE);
 
 export function Breakdown({ segments }: { segments: BreakdownSegment[] }) {
@@ -24,11 +25,13 @@ export function Breakdown({ segments }: { segments: BreakdownSegment[] }) {
               <div key={s.category} className={`h-full ${toneOf(s, i)}`} style={{ flexBasis: `${s.percent}%` }} />
             ))}
           </div>
-          <ul data-row className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-small" aria-hidden="true">
+          {/* Even grid, no orphans: 6 → 3+3, 5 → 3+2, 4 → 2+2. The percentage sits under its name. */}
+          <ul data-row data-legend className={`mt-3 grid gap-x-3 gap-y-2 text-small ${COLS[segments.length <= 3 ? segments.length : Math.ceil(segments.length / 2)]}`} aria-hidden="true">
             {segments.map((s, i) => (
-              <li key={s.category} className="flex items-center gap-1.5 whitespace-nowrap">
-                <span className={`size-2 shrink-0 rounded-full ${toneOf(s, i)}`} />
-                {s.category} <span className="num text-ink-muted">{formatPercent(s.percent)}</span>
+              <li key={s.category} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1.5 whitespace-nowrap">
+                <span className={`size-2 rounded-full ${toneOf(s, i)}`} />
+                <span className="truncate">{s.category}</span>
+                <span className="num col-start-2 text-ink-muted">{formatPercent(s.percent)}</span>
               </li>
             ))}
           </ul>

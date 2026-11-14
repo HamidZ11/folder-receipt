@@ -24,7 +24,9 @@ function pngSize(path: string) {
 }
 
 async function save(page: Page, label: string, out: string) {
-  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label }).click()]);
+  // The device's export controls appear once the paper has landed.
+  await expect(page.getByTestId('export-controls')).toHaveAttribute('data-shown', '');
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: label, exact: true }).click()]);
   await dl.saveAs(out);
   return dl.suggestedFilename();
 }
@@ -36,13 +38,13 @@ test('export tall and square PNGs, names redacted by default, no CSP violations'
   await page.goto('/');
 
   const tallPath = `screens/slice-7/tall-redacted-${browserName}.png`;
-  const name = await save(page, 'Save tall PNG', tallPath);
+  const name = await save(page, 'Tall', tallPath);
   expect(name).toMatch(/^folder-receipt-\d{8}-tall\.png$/);
   const tall = pngSize(tallPath);
   expect(tall.height).toBeGreaterThan(tall.width);
 
   const squarePath = `screens/slice-7/square-redacted-${browserName}.png`;
-  await save(page, 'Save square PNG', squarePath);
+  await save(page, 'Square', squarePath);
   const square = pngSize(squarePath);
   expect(square.width).toBe(square.height);
 
@@ -56,12 +58,12 @@ test('export tall and square PNGs, names redacted by default, no CSP violations'
   await expect(page.locator('[data-export-host]')).toHaveCount(0);
 });
 
-test('ticking "Show file names" changes the exported image', async ({ page, browserName }) => {
+test('turning NAMES on changes the exported image', async ({ page, browserName }) => {
   await page.goto('/');
   const redacted = `screens/slice-7/cmp-redacted-${browserName}.png`;
   const named = `screens/slice-7/tall-names-${browserName}.png`;
-  await save(page, 'Save tall PNG', redacted);
-  await page.getByLabel('Show file names').check();
-  await save(page, 'Save tall PNG', named);
+  await save(page, 'Tall', redacted);
+  await page.getByRole('button', { name: 'Show file names' }).click();
+  await save(page, 'Tall', named);
   expect(readFileSync(named).equals(readFileSync(redacted)), 'names change the pixels').toBe(false);
 });

@@ -15,17 +15,7 @@
     "check:prod": "! grep -rqE 'dev-data-toggle|Worst case|proto-picker' dist/assets"
   },
   "dependencies": {
-    "@fontsource/dm-mono": "^5.3.0",
-    "@fontsource/dm-sans": "^5.3.0",
-    "@fontsource/geist-mono": "^5.3.0",
-    "@fontsource/geist-sans": "^5.3.0",
-    "@fontsource/hanken-grotesk": "^5.3.0",
-    "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/ibm-plex-sans": "^5.3.0",
-    "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/manrope": "^5.3.0",
-    "@fontsource/martian-mono": "^5.3.0",
-    "@fontsource/space-grotesk": "^5.3.0",
     "@fontsource/space-mono": "^5.3.0",
     "modern-screenshot": "^4.7.0",
     "react": "^19.3.1",

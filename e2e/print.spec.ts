@@ -92,7 +92,7 @@ test.describe('print (Chromium)', () => {
     await expect(page.getByTestId('paper')).not.toHaveAttribute('aria-busy');
   });
 
-  test('header first: the paper rises from the slot below, so the header shows before the footer', async ({ page }) => {
+  test('footer first: the paper feeds down out of the slot above, so the footer shows before the header', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/');
     const r = await page.evaluate(() => {
@@ -106,11 +106,11 @@ test.describe('print (Chromium)', () => {
       const last = rows.at(-1)!.getBoundingClientRect();
       const start = (a.effect as KeyframeEffect).getKeyframes()[0]!.transform as string;
       a.finish();
-      return { slotBottom: slot.bottom, headerBottom: first.bottom, footerTop: last.top, start };
+      return { slotTop: slot.top, headerBottom: first.bottom, footerTop: last.top, start };
     });
-    expect(r.start).toMatch(/^translateY\(\d/); // starts below (positive offset)
-    expect(r.headerBottom, 'header is out of the slot at 30%').toBeLessThan(r.slotBottom);
-    expect(r.footerTop, 'footer is still inside the slot at 30%').toBeGreaterThan(r.slotBottom);
+    expect(r.start).toMatch(/^translateY\(-\d/); // starts above the slot (negative offset)
+    expect(r.footerTop, 'footer is out of the slot at 30%').toBeGreaterThan(r.slotTop);
+    expect(r.headerBottom, 'header is still inside the slot at 30%').toBeLessThan(r.slotTop);
   });
 
   test('click skips straight to the end', async ({ page }) => {
